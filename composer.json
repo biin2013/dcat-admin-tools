@@ -1,0 +1,19 @@
+{
+  "name": "biin2013/dcat-admin-tools",
+  "type": "library",
+  "license": "MIT",
+  "autoload": {
+    "psr-4": {
+      "Biin2013\\DcatAdminTools\\": "src/"
+    }
+  },
+  "authors": [
+    {
+      "name": "biin2013"
+    }
+  ],
+  "require": {
+    "php": "^8.2",
+    "dcat-plus/laravel-admin": "^2.0"
+  }
+}
