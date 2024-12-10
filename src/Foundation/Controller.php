@@ -19,4 +19,17 @@ class Controller extends AdminController
     {
         return substr(request()->route()->uri(), strlen(config('admin.route.prefix')));
     }
+
+    protected function translation(): string
+    {
+        if ($this->translation) {
+            return $this->translation;
+        }
+
+        $path = array_slice(explode('\\', get_class($this)), 3);
+        $controller = substr(array_pop($path), 0, -10);
+        $path[] = $controller;
+
+        return strtolower(implode('/', $path));
+    }
 }
