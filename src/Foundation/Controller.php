@@ -6,22 +6,17 @@ use Dcat\Admin\Http\Controllers\AdminController;
 
 class Controller extends AdminController
 {
+    protected string $modelClass;
+
     protected function title(): string
     {
-        if ($title = $this->customTitle()) {
-            return $title;
-        }
-
-        $uri = request()->route()->uri();
-        $prefix = config('admin.route.prefix');
-        $path = substr($uri, strlen($prefix));
         $titles = trans('menu.titles');
 
-        return $titles[$path] ?? parent::title();
+        return $titles[$this->getCurrentUri()] ?? parent::title();
     }
 
-    private function customTitle(): ?string
+    protected function getCurrentUri(): string
     {
-        return null;
+        return substr(request()->route()->uri(), strlen(config('admin.route.prefix')));
     }
 }
