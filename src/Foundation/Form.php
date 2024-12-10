@@ -33,10 +33,10 @@ class Form extends Base
                     ->search($form->input($nameField));
 
                 if ($has !== false) {
-                    $message = $message || trans('global.validations.already_exists', [
-                            $nameField => trans('global.fields.' . $nameField)
-                        ]);
-                    $form->response()->error($message);
+                    $message = $message ?: trans('global.validations.already_exists', [
+                        'attribute' => trans('global.fields.' . $nameField)
+                    ]);
+                    $form->responseValidationMessages($nameField, $message);
                 }
             }
         });
