@@ -37,7 +37,7 @@ trait UseValidate
         return [];
     }
 
-    protected function validateUnique(Form $form, string $field): Unique
+    protected function validateUnique(Form $form, string $field = 'name'): Unique
     {
         return Rule::unique($this->modelClass)
             ->where(fn(Builder $query) => $query->where($field, $form->input($field)));
@@ -45,7 +45,7 @@ trait UseValidate
 
     protected function validateUniqueIgnore(
         Form    $form,
-        string  $field,
+        string  $field = 'name',
         mixed   $ignore = null,
         ?string $column = null
     ): Unique
