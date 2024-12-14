@@ -64,12 +64,12 @@ class Form extends Base
 
     protected function resolveRules(): array
     {
-        $rules = array_merge($this->controller->defaultRules(), $this->controller->rules());
+        $rules = array_merge($this->controller->defaultRules(), $this->controller->rules($this));
 
         if ($this->isCreating()) {
-            $rules = array_merge_recursive($rules, $this->controller->createRules());
+            $rules = array_merge_recursive($rules, $this->controller->createRules($this));
         } elseif ($this->isEditing()) {
-            $rules = array_merge_recursive($rules, $this->controller->updateRules());
+            $rules = array_merge_recursive($rules, $this->controller->updateRules($this));
         }
 
         return $rules;

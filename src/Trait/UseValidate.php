@@ -2,19 +2,22 @@
 
 namespace Biin2013\DcatAdminTools\Trait;
 
+
+use Dcat\Admin\Form;
+
 trait UseValidate
 {
-    public function rules(): array
+    public function rules(Form $form): array
     {
         return [];
     }
 
-    public function createRules(): array
+    public function createRules(Form $form): array
     {
         return [];
     }
 
-    public function updateRules(): array
+    public function updateRules(Form $form): array
     {
         return [];
     }
