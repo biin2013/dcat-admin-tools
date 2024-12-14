@@ -16,7 +16,8 @@ class Form extends Base
      */
     public function __construct(?Controller $controller = null, $repository = null, ?Closure $callback = null, Request $request = null)
     {
-        if (func_num_args() === 2) {
+        if (is_callable(func_get_arg(1))) {
+            $request = $callback;
             $callback = $repository;
             $repository = $controller->model();
         }
@@ -57,13 +58,13 @@ class Form extends Base
         if (empty($rules)) return;
 
         foreach ($rules as $field => $rule) {
-            $this->findFieldByName($field)->rules($rule);
+            $this->findFieldByName($field)?->rules($rule);
         }
     }
 
     protected function resolveRules(): array
     {
-        $rules = $this->controller->rules();
+        $rules = array_merge($this->controller->defaultRules(), $this->controller->rules());
 
         if ($this->isCreating()) {
             $rules = array_merge_recursive($rules, $this->controller->createRules());

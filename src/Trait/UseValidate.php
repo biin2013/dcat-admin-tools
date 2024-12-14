@@ -19,6 +19,13 @@ trait UseValidate
         return [];
     }
 
+    public function defaultRules(): array
+    {
+        return [
+            'brief' => ['max:255']
+        ];
+    }
+
     public function messages(): array
     {
         return [];
