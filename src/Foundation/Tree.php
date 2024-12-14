@@ -2,6 +2,7 @@
 
 namespace Biin2013\DcatAdminTools\Foundation;
 
+use Closure;
 use Dcat\Admin\Tree as Base;
 
 class Tree extends Base
