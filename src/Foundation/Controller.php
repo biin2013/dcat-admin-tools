@@ -5,6 +5,7 @@ namespace Biin2013\DcatAdminTools\Foundation;
 use Biin2013\DcatAdminTools\Trait\UseValidate;
 use Dcat\Admin\Http\Controllers\AdminController;
 use Exception;
+use Illuminate\Support\Str;
 
 class Controller extends AdminController
 {
@@ -15,8 +16,26 @@ class Controller extends AdminController
     protected function title(): string
     {
         $titles = trans('menu.titles');
+        $global = trans('global.labels');
+        $uri = explode('.', request()->route()->getName());
+        array_pop($uri);
+        $uri = array_slice($uri, 2);
 
-        return $titles[$this->getCurrentUri()] ?? parent::title();
+        $path = '';
+        $title = [];
+        foreach ($uri as $value) {
+            $path .= '/' . $value;
+            if (isset($titles[$path])) {
+                $title[] = $titles[$path];
+            } else {
+                $key = Str::singular($value);
+                if (isset($global[$key])) {
+                    $title[] = $global[$key];
+                }
+            }
+        }
+
+        return implode(' <span class="text-secondary">/</span> ', $title);
     }
 
     /**
