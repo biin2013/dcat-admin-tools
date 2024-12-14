@@ -4,6 +4,7 @@ namespace Biin2013\DcatAdminTools\Foundation;
 
 use Biin2013\DcatAdminTools\Trait\UseValidate;
 use Dcat\Admin\Http\Controllers\AdminController;
+use Exception;
 
 class Controller extends AdminController
 {
@@ -18,8 +19,15 @@ class Controller extends AdminController
         return $titles[$this->getCurrentUri()] ?? parent::title();
     }
 
-    protected function model()
+    /**
+     * @throws Exception
+     */
+    public function model()
     {
+        if (!$this->modelClass) {
+            throw new Exception('modelClass is required');
+        }
+
         return new $this->modelClass;
     }
 

@@ -4,14 +4,23 @@ namespace Biin2013\DcatAdminTools\Foundation;
 
 use Closure;
 use Dcat\Admin\Form as Base;
+use Exception;
 use Illuminate\Http\Request;
 
 class Form extends Base
 {
     protected Controller $controller;
 
+    /**
+     * @throws Exception
+     */
     public function __construct(?Controller $controller = null, $repository = null, ?Closure $callback = null, Request $request = null)
     {
+        if (func_num_args() === 2) {
+            $callback = $repository;
+            $repository = $controller->model();
+        }
+
         parent::__construct($repository, $callback, $request);
         $this->controller = $controller;
 
@@ -19,7 +28,7 @@ class Form extends Base
             ->disableEditingCheck()
             ->disableViewCheck();
 
-        $this->submitted(fn(Form $form) => $this->autoValidate($form));
+        $this->submitted(fn(Form $form) => $form->autoValidate());
     }
 
     /*public function uniqueInParentOnUpdate(string $message = '', string $pidField = 'pid', string $nameField = 'name'): void
@@ -41,24 +50,24 @@ class Form extends Base
         });
     }*/
 
-    protected function autoValidate(Form $form): void
+    public function autoValidate(): void
     {
-        $rules = $this->resolveRules($form);
+        $rules = $this->resolveRules();
 
         if (empty($rules)) return;
 
         foreach ($rules as $field => $rule) {
-            $form->findFieldByName($field)->rules($rule);
+            $this->findFieldByName($field)->rules($rule);
         }
     }
 
-    protected function resolveRules(Form $form): array
+    protected function resolveRules(): array
     {
         $rules = $this->controller->rules();
 
-        if ($form->isCreating()) {
+        if ($this->isCreating()) {
             $rules = array_merge_recursive($rules, $this->controller->createRules());
-        } elseif ($form->isEditing()) {
+        } elseif ($this->isEditing()) {
             $rules = array_merge_recursive($rules, $this->controller->updateRules());
         }
 
