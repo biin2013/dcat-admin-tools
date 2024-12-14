@@ -2,10 +2,13 @@
 
 namespace Biin2013\DcatAdminTools\Foundation;
 
+use Biin2013\DcatAdminTools\Trait\UseValidate;
 use Dcat\Admin\Http\Controllers\AdminController;
 
 class Controller extends AdminController
 {
+    use UseValidate;
+
     protected string $modelClass;
 
     protected function title(): string
