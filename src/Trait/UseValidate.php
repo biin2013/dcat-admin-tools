@@ -37,20 +37,21 @@ trait UseValidate
         return [];
     }
 
-    protected function validateUnique(Form $form, string $field = 'name'): Unique
+    protected function validateUnique(Form $form, string $field, ?string $column = null): Unique
     {
         return Rule::unique($this->modelClass)
-            ->where(fn(Builder $query) => $query->where($field, $form->input($field)));
+            ->where(fn(Builder $query) => $query->where($column ?? $field, $form->input($field)));
     }
 
     protected function validateUniqueIgnore(
         Form    $form,
-        string  $field = 'name',
+        string  $field,
+        ?string $column = null,
         mixed   $ignore = null,
-        ?string $column = null
+        ?string $idColumn = null
     ): Unique
     {
-        return $this->validateUnique($form, $field)
-            ->ignore($ignore ?? $form->getKey(), $column);
+        return $this->validateUnique($form, $field, $column)
+            ->ignore($ignore ?? $form->getKey(), $idColumn);
     }
 }
