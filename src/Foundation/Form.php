@@ -58,7 +58,7 @@ class Form extends Base
         if (empty($rules)) return;
 
         foreach ($rules as $field => $rule) {
-            $this->findFieldByName($field)?->rules($rule);
+            $this->findFieldByName($field)?->rules($rule, $this->controller->messages()[$field] ?? []);
         }
     }
 
