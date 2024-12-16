@@ -13,6 +13,7 @@ use Exception;
 
 class Grid extends Base
 {
+    private bool $showIdColumn = true;
     private static int $page = 10;
     private static bool $toolsWithOutline = false;
     private static bool $disableQuickEditButton = true;
@@ -44,6 +45,8 @@ class Grid extends Base
         $this->controller = $controller;
 
         $this->init();
+
+        $this->showIdColumn && $this->column('id');
     }
 
     /**
@@ -119,6 +122,13 @@ class Grid extends Base
                 $batch->add(new BatchRestore($model));
             }
         });
+
+        return $this;
+    }
+
+    public function disableIdColumn(bool $value = true): static
+    {
+        $this->showIdColumn = !$value;
 
         return $this;
     }
