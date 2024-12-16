@@ -50,6 +50,11 @@ class Controller extends AdminController
         return new $this->modelClass;
     }
 
+    public function modelClass(): string
+    {
+        return $this->modelClass;
+    }
+
     protected function getCurrentUri(): string
     {
         return substr(request()->route()->uri(), strlen(config('admin.route.prefix')));

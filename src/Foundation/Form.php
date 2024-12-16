@@ -9,7 +9,7 @@ use Illuminate\Http\Request;
 
 class Form extends Base
 {
-    protected Controller $controller;
+    protected ?Controller $controller;
 
     /**
      * @throws Exception
