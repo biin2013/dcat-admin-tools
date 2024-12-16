@@ -79,14 +79,27 @@ class Grid extends Base
         self::$disableQuickEditButton = !$value;
     }
 
-    public function trashFilter(): void
+    public function useTrashFilter(): static
+    {
+        $this->trashFilter()->restoreAction()->batchRestoreAction();
+
+        return $this;
+    }
+
+    public function trashFilter(): static
     {
         $this->filter(function (Filter $filter) {
             $filter->scope('trashed', trans('global.labels.trash'))->onlyTrashed();
         });
+
+        if (request('_scope_') == 'trashed') {
+            $this->column('deleted_at');
+        }
+
+        return $this;
     }
 
-    public function restoreAction(?string $modelClass = null): void
+    public function restoreAction(?string $modelClass = null): static
     {
         $model = $modelClass ?? $this->controller->modelClass();
         $this->actions(function (Actions $actions) use ($model) {
@@ -94,9 +107,11 @@ class Grid extends Base
                 $actions->append(new Restore($model));
             }
         });
+
+        return $this;
     }
 
-    public function batchRestoreAction(?string $modelClass = null): void
+    public function batchRestoreAction(?string $modelClass = null): static
     {
         $model = $modelClass ?? $this->controller->modelClass();
         $this->batchActions(function (BatchActions $batch) use ($model) {
@@ -104,5 +119,7 @@ class Grid extends Base
                 $batch->add(new BatchRestore($model));
             }
         });
+
+        return $this;
     }
 }
