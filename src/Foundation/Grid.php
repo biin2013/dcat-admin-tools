@@ -79,14 +79,14 @@ class Grid extends Base
         self::$disableQuickEditButton = !$value;
     }
 
-    protected function trashFilter(): void
+    public function trashFilter(): void
     {
         $this->filter(function (Filter $filter) {
             $filter->scope('trashed', trans('global.labels.trash'))->onlyTrashed();
         });
     }
 
-    protected function restoreAction(?string $modelClass = null): void
+    public function restoreAction(?string $modelClass = null): void
     {
         $model = $modelClass ?? $this->controller->modelClass();
         $this->actions(function (Actions $actions) use ($model) {
@@ -96,7 +96,7 @@ class Grid extends Base
         });
     }
 
-    protected function batchRestoreAction(?string $modelClass = null): void
+    public function batchRestoreAction(?string $modelClass = null): void
     {
         $model = $modelClass ?? $this->controller->modelClass();
         $this->batchActions(function (BatchActions $batch) use ($model) {
