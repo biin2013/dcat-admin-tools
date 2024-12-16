@@ -12,7 +12,7 @@ class Restore extends RowAction
     // 注意构造方法的参数必须要有默认值
     public function __construct(string $model = null)
     {
-        $this->title = trans('global.labels.restore');
+        $this->title = '<span class="feather icon-refresh-cw"></span> ' . trans('global.labels.restore');
         $this->model = $model;
     }
 
