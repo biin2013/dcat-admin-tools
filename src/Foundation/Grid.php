@@ -55,6 +55,7 @@ class Grid extends Base
         $this->paginate(self::$page);
         $this->toolsWithOutline(self::$toolsWithOutline);
         $this->disableQuickEditButton(self::$disableQuickEditButton);
+        $this->filter()->expand(false);
     }
 
     /**
