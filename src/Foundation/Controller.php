@@ -72,4 +72,9 @@ class Controller extends AdminController
 
         return strtolower(implode('/', $path));
     }
+
+    protected function yesNoOptions(): array
+    {
+        return trans('global.options.yes_no');
+    }
 }
