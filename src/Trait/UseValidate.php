@@ -4,12 +4,12 @@ namespace Biin2013\DcatAdminTools\Trait;
 
 
 use Biin2013\DcatAdminTools\Foundation\Form;
-use Exception;
 use Illuminate\Database\Query\Builder;
 use Illuminate\Support\Facades\Lang;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\Rule;
 use Illuminate\Validation\Rules\Unique;
+use Illuminate\Validation\ValidationException;
 
 trait UseValidate
 {
@@ -54,6 +54,14 @@ trait UseValidate
         );
     }
 
+    /**
+     * @param array $rules
+     * @param array|null $data
+     * @param array|null $messages
+     * @param array|null $attributes
+     * @return void
+     * @throws ValidationException
+     */
     protected function validateData(
         array  $rules,
         ?array $data = null,
@@ -71,7 +79,7 @@ trait UseValidate
         );
 
         if ($validator->fails()) {
-            throw new Exception($validator->errors()->first());
+            throw new ValidationException($validator);
         }
     }
 
