@@ -5,6 +5,8 @@ namespace Biin2013\DcatAdminTools\Foundation;
 use Biin2013\DcatAdminTools\Trait\UseValidate;
 use Dcat\Admin\Http\Controllers\AdminController;
 use Exception;
+use Illuminate\Contracts\Translation\Translator;
+use Illuminate\Foundation\Application;
 use Illuminate\Support\Str;
 
 class Controller extends AdminController
@@ -82,5 +84,15 @@ class Controller extends AdminController
     {
         $data[$field] = $data[$field] ?? [];
         $data[$field] = array_filter($data[$field], fn($item) => $item['_remove_'] != 1);
+    }
+
+    protected function trans(string $key): Application|array|string|Translator
+    {
+        return trans($this->translation() . '.' . $key);
+    }
+
+    protected function transValidate(string $key): Application|array|string|Translator
+    {
+        return trans('validations.' . $key);
     }
 }
