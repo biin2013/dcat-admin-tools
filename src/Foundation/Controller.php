@@ -93,6 +93,6 @@ class Controller extends AdminController
 
     protected function transValidations(string $key): Application|array|string|Translator
     {
-        return trans('validations.' . $key);
+        return $this->trans('validations.' . $key);
     }
 }
