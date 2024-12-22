@@ -13,17 +13,17 @@ use Illuminate\Validation\Rules\Unique;
 
 trait UseValidate
 {
-    public function rules(array $data): array
+    public function rules(Form $form): array
     {
         return [];
     }
 
-    public function createRules(array $data): array
+    public function createExtraRules(Form $form): array
     {
         return [];
     }
 
-    public function updateRules(array $data): array
+    public function updateExtraRules(Form $form): array
     {
         return [];
     }
@@ -35,7 +35,7 @@ trait UseValidate
         ];
     }
 
-    public function messages(array $data): array
+    public function messages(Form $form): array
     {
         return [];
     }
@@ -55,8 +55,8 @@ trait UseValidate
     }
 
     protected function validateData(
+        array  $rules,
         ?array $data = null,
-        ?array $rules = null,
         ?array $messages = null,
         ?array $attributes = null
     ): void
@@ -65,8 +65,8 @@ trait UseValidate
 
         $validator = Validator::make(
             $data,
-            $rules ?? $this->rules($data),
-            $messages ?? $this->messages($data),
+            $rules,
+            $messages ?? [],
             $attributes ?? $this->resolveAttributes()
         );
 
@@ -75,7 +75,7 @@ trait UseValidate
         }
     }
 
-    protected function validateUnique(string $field, mixed $value, ?string $column = null): Unique
+    protected function validateUnique(Form $form, string $field, ?string $column = null): Unique
     {
         return Rule::unique($this->modelClass)
             ->where(fn(Builder $query) => $query->where($column ?? $field, $form->input($field)));
