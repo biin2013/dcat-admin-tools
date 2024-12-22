@@ -57,19 +57,22 @@ class Form extends Base
 
         if (empty($rules)) return;
 
+        $data = $this->input();
+
         foreach ($rules as $field => $rule) {
-            $this->findFieldByName($field)?->rules($rule, $this->controller->messages()[$field] ?? []);
+            $this->findFieldByName($field)?->rules($rule, $this->controller->messages($data)[$field] ?? []);
         }
     }
 
     protected function resolveRules(): array
     {
-        $rules = array_merge($this->controller->defaultRules(), $this->controller->rules($this));
+        $data = $this->input();
+        $rules = array_merge($this->controller->defaultRules(), $this->controller->rules($data));
 
         if ($this->isCreating()) {
-            $rules = array_merge_recursive($rules, $this->controller->createRules($this));
+            $rules = array_merge_recursive($rules, $this->controller->createRules($data));
         } elseif ($this->isEditing()) {
-            $rules = array_merge_recursive($rules, $this->controller->updateRules($this));
+            $rules = array_merge_recursive($rules, $this->controller->updateRules($data));
         }
 
         return $rules;
