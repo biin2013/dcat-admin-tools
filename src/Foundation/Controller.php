@@ -77,4 +77,10 @@ class Controller extends AdminController
     {
         return trans('global.options.yes_no');
     }
+
+    protected function filterHasManyRemoveItem(array &$data, string $field): void
+    {
+        $data[$field] = $data[$field] ?? [];
+        $data[$field] = array_filter($data[$field], fn($item) => $item['_remove_'] != 1);
+    }
 }
