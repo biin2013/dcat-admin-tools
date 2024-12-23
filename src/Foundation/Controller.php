@@ -83,7 +83,7 @@ class Controller extends AdminController
     protected function filterHasManyRemoveItem(array &$data, string $field): void
     {
         $data[$field] = $data[$field] ?? [];
-        $data[$field] = array_filter($data[$field], fn($item) => $item['_remove_'] != 1);
+        $data[$field] = array_values(array_filter($data[$field], fn($item) => $item['_remove_'] != 1));
     }
 
     protected function trans(string $key): Application|array|string|Translator
@@ -94,5 +94,15 @@ class Controller extends AdminController
     protected function transValidations(string $key): Application|array|string|Translator
     {
         return $this->trans('validations.' . $key);
+    }
+
+    protected function getIndexRoute(): string
+    {
+        $routeName = request()->route()->getName();
+        $route = explode('.', $routeName);
+        array_pop($route);
+        $route[] = 'index';
+
+        return implode('.', $route);
     }
 }
