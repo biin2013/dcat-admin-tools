@@ -10,6 +10,7 @@ use Dcat\Admin\Grid\Displayers\Actions;
 use Dcat\Admin\Grid\Filter;
 use Dcat\Admin\Grid\Tools\BatchActions;
 use Exception;
+use Illuminate\Support\Facades\Schema;
 
 class Grid extends Base
 {
@@ -40,6 +41,13 @@ class Grid extends Base
         }
 
         parent::__construct($repository, $builder, $request);
+
+        if (
+            $this->model()->repository() &&
+            Schema::hasColumn($this->model()->repository()->model()->getTable(), 'id')
+        ) {
+            $this->model()->orderBy('id', 'desc');
+        }
 
         $this->controller = $controller;
 
