@@ -104,6 +104,8 @@ class Grid extends Base
 
     public function trashFilter(): static
     {
+        if (Admin::user()->cannot(Helper::resolvePermissionHttpPath('trash'))) return $this;
+
         $this->filter(function (Filter $filter) {
             $filter->scope('trashed', trans('global.labels.trash'))->onlyTrashed();
         });
@@ -117,6 +119,8 @@ class Grid extends Base
 
     public function restoreAction(?string $modelClass = null): static
     {
+        if (Admin::user()->cannot(Helper::resolvePermissionHttpPath('restore'))) return $this;
+
         $model = $modelClass ?? $this->controller->modelClass();
         $this->actions(function (Actions $actions) use ($model) {
             if (request('_scope_') == 'trashed') {
@@ -129,6 +133,8 @@ class Grid extends Base
 
     public function batchRestoreAction(?string $modelClass = null): static
     {
+        if (Admin::user()->cannot(Helper::resolvePermissionHttpPath('restore'))) return $this;
+
         $model = $modelClass ?? $this->controller->modelClass();
         $this->batchActions(function (BatchActions $batch) use ($model) {
             if (request('_scope_') == 'trashed') {
