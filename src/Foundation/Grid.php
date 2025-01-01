@@ -4,7 +4,9 @@ namespace Biin2013\DcatAdminTools\Foundation;
 
 use Biin2013\DcatAdminTools\Actions\BatchRestore;
 use Biin2013\DcatAdminTools\Actions\Restore;
+use Biin2013\DcatAdminTools\Utils\Helper;
 use Closure;
+use Dcat\Admin\Admin;
 use Dcat\Admin\Grid as Base;
 use Dcat\Admin\Grid\Displayers\Actions;
 use Dcat\Admin\Grid\Filter;
@@ -62,8 +64,12 @@ class Grid extends Base
         $this->column('id');
         $this->paginate(self::$page);
         $this->toolsWithOutline(self::$toolsWithOutline);
-        $this->disableQuickEditButton(self::$disableQuickEditButton);
         $this->filter()->expand(false);
+        $this->disableQuickEditButton(self::$disableQuickEditButton)
+            ->showCreateButton()
+            ->showEditButton()
+            ->showDeleteButton()
+            ->showBatchDelete();
     }
 
     /**
@@ -131,5 +137,40 @@ class Grid extends Base
         });
 
         return $this;
+    }
+
+    public function showQuickEditButton(bool $val = true): Grid
+    {
+        return $this->disableQuickEditButton(
+            Admin::user()->cannot(Helper::resolvePermissionHttpPath('update'))
+        );
+    }
+
+    public function showEditButton(bool $val = true): Grid
+    {
+        return $this->disableEditButton(
+            Admin::user()->cannot(Helper::resolvePermissionHttpPath('update'))
+        );
+    }
+
+    public function showCreateButton(bool $val = true): Grid
+    {
+        return $this->disableCreateButton(
+            Admin::user()->cannot(Helper::resolvePermissionHttpPath('store'))
+        );
+    }
+
+    public function showDeleteButton(bool $val = true): Grid
+    {
+        return $this->disableDeleteButton(
+            Admin::user()->cannot(Helper::resolvePermissionHttpPath('destroy'))
+        );
+    }
+
+    public function showBatchDelete(bool $val = true): Grid
+    {
+        return $this->disableBatchDelete(
+            Admin::user()->cannot(Helper::resolvePermissionHttpPath('destroy'))
+        );
     }
 }
