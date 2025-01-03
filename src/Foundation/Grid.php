@@ -97,9 +97,7 @@ class Grid extends Base
 
     public function useTrashFilter(): static
     {
-        $this->trashFilter()->restoreAction()->batchRestoreAction();
-
-        return $this;
+        return $this->trashFilter()->restoreAction()->batchRestoreAction();
     }
 
     public function trashFilter(): static
