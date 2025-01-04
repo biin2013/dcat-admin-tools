@@ -2,7 +2,9 @@
 
 namespace Biin2013\DcatAdminTools\Foundation;
 
+use Biin2013\DcatAdminTools\Utils\Helper;
 use Closure;
+use Dcat\Admin\Admin;
 use Dcat\Admin\Form as Base;
 use Exception;
 use Illuminate\Http\Request;
@@ -27,9 +29,17 @@ class Form extends Base
 
         $this->disableCreatingCheck()
             ->disableEditingCheck()
-            ->disableViewCheck();
+            ->disableViewCheck()
+            ->disabledeleteButton(false);
 
         $this->submitted(fn(Form $form) => $form->autoValidate());
+    }
+
+    public function disableDeleteButton(bool $disable = true)
+    {
+        $disable = $disable || Admin::user()->cannot(Helper::resolvePermissionHttpPath('destroy'));
+
+        return parent::disableDeleteButton($disable);
     }
 
     /*public function uniqueInParentOnUpdate(string $message = '', string $pidField = 'pid', string $nameField = 'name'): void
