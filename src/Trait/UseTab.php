@@ -33,7 +33,7 @@ trait UseTab
         foreach ($tabs as $v) {
             $tab->addLink(
                 $this->resolveTitle($v),
-                admin_route(str_replace('/', '.', ltrim($v, '/'))),
+                admin_route(str_replace('/', '.', ltrim($v, '/')) . '.index'),
                 $this->resolveActiveTab($v)
             );
         }
@@ -51,9 +51,8 @@ trait UseTab
         if ($title = $this->lang[$path] ?? null) return $title;
 
         $data = explode('/', $path);
-        $label = $data[count($data) - 2];
 
-        return trans('global.labels.' . Str::singular($label));
+        return trans('global.labels.' . Str::singular(end($data)));
     }
 
     protected function resolveTabs(): array
@@ -69,7 +68,6 @@ trait UseTab
         $uri = request()->route()->uri();
         $data = explode('/', $path);
         array_shift($data);
-        array_pop($data);
 
         return $uri == config('admin.route.prefix') . '/' . implode('/', $data);
     }
