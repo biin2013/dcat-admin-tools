@@ -177,4 +177,9 @@ class Grid extends Base
             Admin::user()->cannot(Helper::resolvePermissionHttpPath('destroy'))
         );
     }
+
+    public function customQuickSearch($field = 'name', $label = null): Base\Tools\QuickSearch
+    {
+        return $this->quickSearch($field)->placeholder($label ?? trans('admin.name'));
+    }
 }
