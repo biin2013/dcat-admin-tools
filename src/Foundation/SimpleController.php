@@ -16,7 +16,12 @@ class SimpleController extends Controller
     protected function grid(): Grid
     {
         return $this->customGrid(Grid::make($this, function (Grid $grid) {
-            array_map(fn($column) => $grid->column($column), $this->columns);
+            $custom = $this->customGridColumn();
+            foreach ($this->columns as $column) {
+                isset($custom[$column])
+                    ? $custom[$column]($grid)
+                    : $this->defaultGridColumn($grid, $column);
+            }
 
             if ($this->nameQuickSearch) {
                 $grid->customQuickSearch();
@@ -29,9 +34,24 @@ class SimpleController extends Controller
         }));
     }
 
+    protected function labels(): array
+    {
+        return [];
+    }
+
     protected function customGrid(Grid $grid): Grid
     {
         return $grid;
+    }
+
+    protected function customGridColumn(): array
+    {
+        return [];
+    }
+
+    protected function defaultGridColumn(Grid $grid, string $column): void
+    {
+        $grid->column($column, $this->labels()[$column] ?? '');
     }
 
     protected function customFilter(Filter $filter): void
@@ -42,8 +62,11 @@ class SimpleController extends Controller
     protected function form(): Form
     {
         return $this->customForm(Form::make($this, function (Form $form) {
+            $custom = $this->customFormField();
             foreach ($this->formColumns as $column => $type) {
-                $form->$type($column);
+                isset($custom[$column])
+                    ? $custom[$column]($form)
+                    : $this->defaultFormField($form, $type, $column);
             }
         }));
     }
@@ -51,6 +74,16 @@ class SimpleController extends Controller
     protected function customForm(Form $form): Form
     {
         return $form;
+    }
+
+    protected function customFormField(): array
+    {
+        return [];
+    }
+
+    protected function defaultFormField(Form $form, string $type, string $column): void
+    {
+        $form->$type($column, $this->labels()[$column] ?? null);
     }
 
     public function rules(Form $form): array
@@ -61,12 +94,27 @@ class SimpleController extends Controller
     protected function detail($id): Show
     {
         return $this->customDetail(Show::make($id, $this->model(), function (Show $show) {
-            array_map(fn($column) => $show->field($column), $this->columns);
+            $custom = $this->customDetailField($show);
+            foreach ($this->columns as $column) {
+                isset($custom[$column])
+                    ? $custom[$column]($show)
+                    : $this->defaultDetailField($show, $column);
+            }
         }));
     }
 
     protected function customDetail(Show $show): Show
     {
         return $show;
+    }
+
+    protected function customDetailField(): array
+    {
+        return [];
+    }
+
+    protected function defaultDetailField(Show $show, string $column): void
+    {
+        $show->field($column, $this->labels()[$column] ?? '');
     }
 }

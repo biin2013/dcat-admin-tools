@@ -7,6 +7,7 @@ use Closure;
 use Dcat\Admin\Admin;
 use Dcat\Admin\Form as Base;
 use Exception;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Http\Request;
 
 class Form extends Base
@@ -83,5 +84,45 @@ class Form extends Base
         }
 
         return $rules;
+    }
+
+    public static function selectApi(
+        $form,
+        string $field,
+        Model $model,
+        string $api,
+        array $defaultConfig = [],
+        string $idField = 'id',
+        string $nameField = 'name'
+    )
+    {
+        return $form->select($field)
+            ->options(function ($id) use ($model, $idField, $nameField) {
+                $data = [];
+
+                if (!empty($id)) {
+                    $model = $model->find($id);
+
+                    if (!empty($model)) {
+                        $data[$model->$idField] = $model->$nameField;
+                    }
+                }
+
+                return $data;
+            })
+            ->addDefaultConfig(array_merge(['minimumInputLength' => 0], $defaultConfig))
+            ->ajax($api);
+    }
+
+    public function selectFromApi(
+        string $field,
+        Model  $model,
+        string $api,
+        array  $defaultConfig = [],
+        string $idField = 'id',
+        string $nameField = 'name'
+    )
+    {
+        return static::selectApi($this, $field, $model, $api, $defaultConfig, $idField, $nameField);
     }
 }
