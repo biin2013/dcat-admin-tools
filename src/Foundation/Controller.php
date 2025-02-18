@@ -75,15 +75,24 @@ class Controller extends AdminController
         return strtolower(implode('/', $path));
     }
 
-    protected function yesNoOptions(): array
-    {
-        return trans('global.options.yes_no');
-    }
-
-    protected function filterHasManyRemoveItem(array &$data, string $field): void
+    protected function filterHasManyRemoveItem(array &$data, string $field, bool $remove = true): void
     {
         $data[$field] = $data[$field] ?? [];
-        $data[$field] = array_values(array_filter($data[$field], fn($item) => $item['_remove_'] != 1));
+        $data[$field] = $this->filterRemoveItem($data[$field], $remove);
+    }
+
+    protected function filterRemoveItem(array $data, bool $remove = true): array
+    {
+        $filter = array_filter($data, fn($item) => $item['_remove_'] != 1);
+
+        if ($remove) {
+            $filter = array_map(function ($item) {
+                unset($item['_remove_']);
+                return $item;
+            }, $filter);
+        }
+
+        return array_values($filter);
     }
 
     protected function trans(string $key): Application|array|string|Translator
