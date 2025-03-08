@@ -16,9 +16,6 @@ use Illuminate\Support\Facades\Schema;
 
 class Grid extends Base
 {
-    private static int $page = 10;
-    private static bool $toolsWithOutline = false;
-    private static bool $disableQuickEditButton = true;
     protected ?Controller $controller;
 
 
@@ -61,38 +58,14 @@ class Grid extends Base
      */
     private function init(): void
     {
-        $this->column('id');
-        $this->paginate(self::$page);
-        $this->toolsWithOutline(self::$toolsWithOutline);
+        $this->paginate(10);
+        $this->toolsWithOutline(false);
         $this->filter()->expand(false);
-        $this->disableQuickEditButton(self::$disableQuickEditButton)
+        $this->disableQuickEditButton()
             ->showCreateButton()
             ->showEditButton()
             ->showDeleteButton()
             ->showBatchDelete();
-    }
-
-    /**
-     * @param int $page
-     * @return void
-     */
-    public static function setPage(int $page = 20): void
-    {
-        self::$page = $page;
-    }
-
-    /**
-     * @param bool $value
-     * @return void
-     */
-    public static function setToolsWithOutline(bool $value = true): void
-    {
-        self::$toolsWithOutline = $value;
-    }
-
-    public static function setShowEditButton(bool $value = true): void
-    {
-        self::$disableQuickEditButton = !$value;
     }
 
     public function useTrashFilter(): static

@@ -64,11 +64,20 @@ class Controller extends AdminController
 
     protected function translation(): string
     {
-        if ($this->translation) {
-            return $this->translation;
+        if (!$this->translation) {
+            $this->translation = $this->resolveTranslation($this);
         }
 
-        $path = array_slice(explode('\\', get_class($this)), 3);
+        return $this->translation;
+    }
+
+    protected function resolveTranslation(Controller|string $class): string
+    {
+        if ($class instanceof Controller) {
+            $class = get_class($class);
+        }
+
+        $path = array_slice(explode('\\', $class), 3);
         $controller = substr(array_pop($path), 0, -10);
         $path[] = $controller;
 
