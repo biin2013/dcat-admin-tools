@@ -14,7 +14,7 @@ class Import extends Command
      * @var string
      */
     protected $signature = 'admin:import
-                        { path : file path, start with console/import  },
+                        { path : file path, start with lang_path/console/import  },
                         { --E|except=* : except update fields },
                         { --O|only=* : only update fields },
                         { --T|truncate : truncate table }';
@@ -81,16 +81,17 @@ class Import extends Command
 
     private function insertToDb($config, $exceptFields): void
     {
-        $primaryKey = $config['unique_field'] ?? 'field';
+        $primaryKey = $config['unique'] ?? 'key';
         $data = $this->resolveData($config['data'], $primaryKey);
-        $exists = DB::table($config['table'])
-            ->whereIn($primaryKey, array_keys($data))
-            ->pluck($primaryKey)
-            ->toArray();
+
         if ($this->option('truncate')) {
             DB::table($config['table'])->truncate();
             DB::table($config['table'])->insert($data);
         } else {
+            $exists = DB::table($config['table'])
+                ->whereIn($primaryKey, array_keys($data))
+                ->pluck($primaryKey)
+                ->toArray();
             foreach ($data as $v) {
                 if (in_array($v[$primaryKey], $exists)) {
                     DB::table($config['table'])
