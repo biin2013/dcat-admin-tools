@@ -30,8 +30,8 @@ class Import extends Command
         'config' => [
             // table name, if empty, default is file name
             'table' => 'admin_settings',
-            // unique field, default key field
-            'unique' => 'key',
+            // primary_key field, default key field
+            'primary_key' => ['key'],
             // mapping parent key to field, default empty, will not be mapping parent key
             'mapping_parent_key' => '',
             // parent key separator, default /
@@ -104,14 +104,14 @@ STR;
             return;
         }
 
-        DB::transaction(fn() => $this->insertToDb($config, $data['data'], $exceptFields));
+        $this->insertToDb($config, $data['data'], $exceptFields);
         $this->info('import success');
     }
 
     private function resolveConfig(array $config): array
     {
         $config = array_merge([
-            'unique' => 'key',
+            'primary_key' => ['key'],
             'mapping_parent_key' => '',
             'parent_key_separator' => '/',
         ], $config);
@@ -128,29 +128,29 @@ STR;
      */
     private function insertToDb(array $config, array $data, array $exceptFields): void
     {
-        $primaryKey = $config['unique'];
         $data = $this->resolveData(
             $config,
-            $data,
-            $primaryKey
+            $data
         );
 
         if ($this->option('truncate')) {
             DB::table($config['table'])->truncate();
             DB::table($config['table'])->insert($data);
         } else {
-            $exists = DB::table($config['table'])
-                ->whereIn($primaryKey, array_keys($data))
-                ->pluck($primaryKey)
-                ->toArray();
-            foreach ($data as $v) {
-                if (in_array($v[$primaryKey], $exists)) {
+            DB::beginTransaction();
+            try {
+                foreach ($data as $v) {
                     DB::table($config['table'])
-                        ->where($primaryKey, $v[$primaryKey])
-                        ->update(array_diff_key($v, array_flip($exceptFields)));
-                } else {
-                    DB::table($config['table'])->insert($v);
+                        ->updateOrInsert(
+                            array_combine($config['primary_key'], array_map(fn($val) => $v[$val], $config['primary_key'])),
+                            array_diff_key($v, array_flip($exceptFields))
+                        );
                 }
+
+                DB::commit();
+            } catch (Exception $e) {
+                DB::rollBack();
+                throw $e;
             }
         }
     }
@@ -159,10 +159,9 @@ STR;
      * @throws Exception
      */
     private function resolveData(
-        array  $config,
-        array  $data,
-        string $primaryKey,
-        array  $parentKeys = []
+        array $config,
+        array $data,
+        array $parentKeys = []
     ): array
     {
         $list = [];
@@ -177,14 +176,12 @@ STR;
                 if (empty($v['parent_key'])) {
                     throw new Exception('parent_key field required');
                 }
-                $parentKeys[] = $v['parent_key'];
                 $list = array_merge(
                     $list,
                     $this->resolveData(
                         $config,
                         $v['children'],
-                        $primaryKey,
-                        $parentKeys
+                        array_merge($parentKeys, [$v['parent_key']])
                     )
                 );
             }
