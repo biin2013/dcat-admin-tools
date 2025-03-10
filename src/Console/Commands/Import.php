@@ -4,7 +4,6 @@ namespace Biin2013\DcatAdminTools\Console\Commands;
 
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Lang;
 
 class Import extends Command
 {
@@ -14,7 +13,7 @@ class Import extends Command
      * @var string
      */
     protected $signature = 'admin:import
-                        { path : file path, start with lang_path/console/import  },
+                        { path : file path, start with config_path/imports  },
                         { --E|except=* : except update fields },
                         { --O|only=* : only update fields },
                         { --T|truncate : truncate table }';
@@ -24,7 +23,39 @@ class Import extends Command
      *
      * @var string
      */
-    protected $description = 'import data to databases';
+    protected $description = <<<STR
+    import data to databases, file format:
+    [
+        'config' => [
+            // table name, if empty, default is file name
+            'table' => 'admin_settings',
+            // unique field, default key field
+            'unique' => 'key',
+            // mapping parent key to field, default empty, will not be mapping parent key
+            'mapping_parent_key' => '',
+            // parent key separator, default /
+            'parent_key_separator' => '/',
+        ],
+        'data' => [
+            [
+                'key' => '',
+                'value' => '',
+                'type' => 'bool|float|int|string|json|array',
+                'brief' => ''
+            ]
+        ]
+        // or data is
+        'data' => [
+            // unique field => value
+            'key' => '',
+            'children' => [
+                [
+                    'key' => ...
+                ]
+            ]
+        ]
+    ]
+STR;
 
     /**
      * Create a new command instance.
@@ -42,19 +73,12 @@ class Import extends Command
      */
     public function handle()
     {
-        $this->info('start handle');
-        $path = 'console/import/' . $this->argument('path');
-        $config = Lang::get($path);
-        if (!is_array($config)) {
-            $this->error(lang_path($path) . ' file not exist');
-            return;
-        }
-        if (empty($config['table'])) {
-            $this->error('table field required');
-            return;
-        }
+        $this->info('start import');
+        $path = config_path('imports/' . $this->argument('path') . '.php');
+        $data = require $path;
+        $config = $this->resolveConfig($data['config'] ?? []);
 
-        if (empty($config['data'])) {
+        if (empty($data['data'])) {
             $this->error('data field required');
             return;
         }
@@ -70,19 +94,38 @@ class Import extends Command
                 $exceptFields[] = $result;
             }
         }
-        if (empty($exceptFields) && !$this->confirm('empty except fields, are you sure ?')) {
+        if (empty($exceptFields) && !$this->confirm('empty except fields, are you sure ?', true)) {
             $this->warn('user terminal');
             return;
         }
 
-        $this->insertToDb($config, $exceptFields);
-        $this->info('end handle');
+        DB::transaction(fn() => $this->insertToDb($config, $data['data'], $exceptFields));
+        $this->info('import success');
     }
 
-    private function insertToDb($config, $exceptFields): void
+    private function resolveConfig(array $config): array
     {
-        $primaryKey = $config['unique'] ?? 'key';
-        $data = $this->resolveData($config['data'], $primaryKey);
+        $config = array_merge([
+            'unique' => 'key',
+            'mapping_parent_key' => '',
+            'parent_key_separator' => '/',
+        ], $config);
+
+        if (empty($config['table'])) {
+            $config['table'] = basename($this->argument('path'));
+        }
+
+        return $config;
+    }
+
+    private function insertToDb(array $config, array $data, array $exceptFields): void
+    {
+        $primaryKey = $config['unique'];
+        $data = $this->resolveData(
+            $config,
+            $data,
+            $primaryKey
+        );
 
         if ($this->option('truncate')) {
             DB::table($config['table'])->truncate();
@@ -104,16 +147,34 @@ class Import extends Command
         }
     }
 
-    private function resolveData(array $data, string $primaryKey): array
+    private function resolveData(
+        array  $config,
+        array  $data,
+        string $primaryKey,
+        array  $parentKeys = []
+    ): array
     {
         $list = [];
         $only = $this->option('only');
-        foreach ($data as $v) {
-            if (empty($v['children'])) {
+
+        if (empty($data['children'])) {
+            foreach ($data as $v) {
+                if ($config['mapping_parent_key']) {
+                    $v[$config['mapping_parent_key']] = implode($config['parent_key_separator'], $parentKeys);
+                }
                 $list[$v[$primaryKey]] = $v;
-            } else {
-                $list = array_merge($list, $this->resolveData($v['children'], $primaryKey));
             }
+        } else {
+            $parentKeys[] = $data[$primaryKey];
+            $list = array_merge(
+                $list,
+                $this->resolveData(
+                    $config,
+                    $data['children'],
+                    $primaryKey,
+                    $parentKeys
+                )
+            );
         }
 
         return empty($only)
