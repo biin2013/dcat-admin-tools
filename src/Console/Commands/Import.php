@@ -2,6 +2,7 @@
 
 namespace Biin2013\DcatAdminTools\Console\Commands;
 
+use Exception;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\DB;
 
@@ -42,17 +43,21 @@ class Import extends Command
                 'value' => '',
                 'type' => 'bool|float|int|string|json|array',
                 'brief' => ''
-            ]
+            ],
+            ...
         ]
         // or data is
         'data' => [
-            // unique field => value
-            'key' => '',
-            'children' => [
-                [
-                    'key' => ...
+            [
+                'parent_key' => '',
+                'children' => [
+                    [
+                        'key' => ...
+                    ],
+                    ...
                 ]
-            ]
+            ],
+            ...
         ]
     ]
 STR;
@@ -118,6 +123,9 @@ STR;
         return $config;
     }
 
+    /**
+     * @throws Exception
+     */
     private function insertToDb(array $config, array $data, array $exceptFields): void
     {
         $primaryKey = $config['unique'];
@@ -147,6 +155,9 @@ STR;
         }
     }
 
+    /**
+     * @throws Exception
+     */
     private function resolveData(
         array  $config,
         array  $data,
@@ -155,30 +166,32 @@ STR;
     ): array
     {
         $list = [];
-        $only = $this->option('only');
 
-        if (empty($data['children'])) {
-            foreach ($data as $v) {
-                if ($config['mapping_parent_key']) {
+        foreach ($data as $v) {
+            if (empty($v['children'])) {
+                if ($config['mapping_parent_key'] && !empty($parentKeys)) {
                     $v[$config['mapping_parent_key']] = implode($config['parent_key_separator'], $parentKeys);
                 }
-                $list[$v[$primaryKey]] = $v;
+                $list[] = $v;
+            } else {
+                if (empty($v['parent_key'])) {
+                    throw new Exception('parent_key field required');
+                }
+                $parentKeys[] = $v['parent_key'];
+                $list = array_merge(
+                    $list,
+                    $this->resolveData(
+                        $config,
+                        $v['children'],
+                        $primaryKey,
+                        $parentKeys
+                    )
+                );
             }
-        } else {
-            $parentKeys[] = $data[$primaryKey];
-            $list = array_merge(
-                $list,
-                $this->resolveData(
-                    $config,
-                    $data['children'],
-                    $primaryKey,
-                    $parentKeys
-                )
-            );
         }
 
-        return empty($only)
+        return empty($this->option('only'))
             ? $list
-            : array_intersect_key($list, array_flip($only));
+            : array_intersect_key($list, array_flip($this->option('only')));
     }
 }
