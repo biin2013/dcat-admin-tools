@@ -34,8 +34,8 @@ class Import extends Command
             'primary_key' => ['key'],
             // mapping parent key to field, default empty, will not be mapping parent key
             'mapping_parent_key' => '',
-            // parent key separator, default /
-            'parent_key_separator' => '/',
+            // parent key separator, default _
+            'parent_key_separator' => '_',
         ],
         'data' => [
             [
@@ -48,14 +48,24 @@ class Import extends Command
         ]
         // or data is
         'data' => [
-            [
-                'parent_key' => '',
-                'children' => [
-                    [
-                        'key' => ...
-                    ],
-                    ...
+            'key' => [
+                'key2' => [
+                    'key3' => [
+                        [
+                            'key' => '',
+                            'value' => '',
+                            'type' => 'bool|float|int|string|json|array',
+                            'brief' => ''
+                        ],
+                        ...
+                    ]
                 ]
+            ],
+            [
+                'key' => '',
+                'value' => '',
+                'type' => 'bool|float|int|string|json|array',
+                'brief' => ''
             ],
             ...
         ]
@@ -113,7 +123,7 @@ STR;
         $config = array_merge([
             'primary_key' => ['key'],
             'mapping_parent_key' => '',
-            'parent_key_separator' => '/',
+            'parent_key_separator' => '_',
         ], $config);
 
         if (empty($config['table'])) {
@@ -132,6 +142,7 @@ STR;
             $config,
             $data
         );
+        dd($data);
 
         if ($this->option('truncate')) {
             DB::table($config['table'])->truncate();
@@ -166,22 +177,19 @@ STR;
     {
         $list = [];
 
-        foreach ($data as $v) {
-            if (empty($v['children'])) {
+        foreach ($data as $k => $v) {
+            if (is_int($k)) {
                 if ($config['mapping_parent_key'] && !empty($parentKeys)) {
                     $v[$config['mapping_parent_key']] = implode($config['parent_key_separator'], $parentKeys);
                 }
                 $list[] = $v;
             } else {
-                if (empty($v['parent_key'])) {
-                    throw new Exception('parent_key field required');
-                }
                 $list = array_merge(
                     $list,
                     $this->resolveData(
                         $config,
-                        $v['children'],
-                        array_merge($parentKeys, [$v['parent_key']])
+                        $v,
+                        array_merge($parentKeys, [$k])
                     )
                 );
             }
