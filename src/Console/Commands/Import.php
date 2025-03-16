@@ -142,7 +142,6 @@ STR;
             $config,
             $data
         );
-        dd($data);
 
         if ($this->option('truncate')) {
             DB::table($config['table'])->truncate();
