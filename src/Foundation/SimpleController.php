@@ -7,11 +7,16 @@ use Dcat\Admin\Grid\Filter;
 class SimpleController extends Controller
 {
     protected array $columns = ['name', 'brief', 'created_at'];
+    protected array $detailColumns = [];
     protected array $formColumns = ['name' => 'text', 'brief' => 'textarea'];
     protected array $formRules = ['name' => ['required', 'max:45']];
-
     protected bool $nameQuickSearch = true;
     protected bool $useTrashFilter = true;
+
+    protected bool $create = true;
+    protected bool $edit = true;
+    protected bool $delete = true;
+    protected bool $show = true;
 
     protected function grid(): Grid
     {
@@ -22,6 +27,11 @@ class SimpleController extends Controller
                     ? $custom[$column]($grid)
                     : $this->defaultGridColumn($grid, $column);
             }
+
+            !$this->create && $grid->disableCreateButton();
+            !$this->show && $grid->disableViewButton();
+            !$this->edit && $grid->disableEditButton()->disableQuickEditButton();
+            !$this->delete && $grid->disableDeleteButton();
 
             if ($this->nameQuickSearch) {
                 $grid->customQuickSearch();
@@ -95,11 +105,14 @@ class SimpleController extends Controller
     {
         return $this->customDetail(Show::make($id, $this->model(), function (Show $show) {
             $custom = $this->customDetailField($show);
-            foreach ($this->columns as $column) {
+            foreach ($this->detailColumns ?: $this->columns as $column) {
                 isset($custom[$column])
                     ? $custom[$column]($show)
                     : $this->defaultDetailField($show, $column);
             }
+
+            !$this->edit && $show->disableEditButton()->disableQuickEdit();
+            !$this->delete && $show->disableDeleteButton();
         }));
     }
 
