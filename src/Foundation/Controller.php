@@ -114,6 +114,16 @@ class Controller extends AdminController
         return $this->trans('validations.' . $key);
     }
 
+    protected function transFields(string $key): Application|array|string|Translator
+    {
+        return $this->trans('fields.' . $key);
+    }
+
+    protected function transLabels(string $key): Application|array|string|Translator
+    {
+        return $this->trans('labels.' . $key);
+    }
+
     protected function getIndexRoute(): string
     {
         $routeName = request()->route()->getName();
