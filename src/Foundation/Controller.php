@@ -105,24 +105,24 @@ class Controller extends AdminController
         return array_values($filter);
     }
 
-    protected function trans(string $key): Application|array|string|Translator
+    protected function trans(string $key, array $replace = []): Application|array|string|Translator
     {
-        return trans($this->translation() . '.' . $key);
+        return trans($this->translation() . '.' . $key, $replace);
     }
 
-    protected function transValidations(string $key): Application|array|string|Translator
+    protected function transValidations(string $key, array $replace = []): Application|array|string|Translator
     {
-        return $this->trans('validations.' . $key);
+        return $this->trans('validations.' . $key, $replace);
     }
 
-    protected function transFields(string $key): Application|array|string|Translator
+    protected function transFields(string $key, array $replace = []): Application|array|string|Translator
     {
-        return $this->trans('fields.' . $key);
+        return $this->trans('fields.' . $key, $replace);
     }
 
-    protected function transLabels(string $key): Application|array|string|Translator
+    protected function transLabels(string $key, array $replace = []): Application|array|string|Translator
     {
-        return $this->trans('labels.' . $key);
+        return $this->trans('labels.' . $key, $replace);
     }
 
     protected function getIndexRoute(): string
