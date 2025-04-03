@@ -105,22 +105,22 @@ class Controller extends AdminController
         return array_values($filter);
     }
 
-    protected function trans(string $key, array $replace = []): Application|array|string|Translator
+    public function trans(string $key, array $replace = []): Application|array|string|Translator
     {
         return trans($this->translation() . '.' . $key, $replace);
     }
 
-    protected function transValidations(string $key, array $replace = []): Application|array|string|Translator
+    public function transValidations(string $key, array $replace = []): Application|array|string|Translator
     {
         return $this->trans('validations.' . $key, $replace);
     }
 
-    protected function transFields(string $key, array $replace = []): Application|array|string|Translator
+    public function transFields(string $key, array $replace = []): Application|array|string|Translator
     {
         return $this->trans('fields.' . $key, $replace);
     }
 
-    protected function transLabels(string $key, array $replace = []): Application|array|string|Translator
+    public function transLabels(string $key, array $replace = []): Application|array|string|Translator
     {
         return $this->trans('labels.' . $key, $replace);
     }

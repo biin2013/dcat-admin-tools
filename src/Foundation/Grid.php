@@ -153,6 +153,6 @@ class Grid extends Base
 
     public function customQuickSearch($field = 'name', $label = null): Base\Tools\QuickSearch
     {
-        return $this->quickSearch($field)->placeholder($label ?? trans('admin.name'));
+        return $this->quickSearch($field)->placeholder($label ?? $this->controller->transFields($field));
     }
 }
