@@ -34,7 +34,7 @@ class SimpleController extends Controller
             !$this->delete && $grid->disableDeleteButton();
 
             if ($this->quickSearchField) {
-                $grid->customQuickSearch($this->quickSearchField);
+                $grid->customQuickSearch($this->quickSearchField, $this->quickSearchLabel());
             }
 
             if ($this->useTrashFilter) {
@@ -42,6 +42,13 @@ class SimpleController extends Controller
                 $grid->useTrashFilter();
             }
         }));
+    }
+
+    protected function quickSearchLabel(): string
+    {
+        return $this->quickSearchField === 'name'
+            ? trans('admin.name')
+            : $this->transFields($this->quickSearchField);
     }
 
     protected function labels(): array
