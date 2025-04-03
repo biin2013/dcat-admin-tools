@@ -10,7 +10,7 @@ class SimpleController extends Controller
     protected array $detailColumns = [];
     protected array $formColumns = ['name' => 'text', 'brief' => 'textarea'];
     protected array $formRules = ['name' => ['required', 'max:45']];
-    protected bool $nameQuickSearch = true;
+    protected string $quickSearchField = 'name';
     protected bool $useTrashFilter = true;
 
     protected bool $create = true;
@@ -33,8 +33,8 @@ class SimpleController extends Controller
             !$this->edit && $grid->disableEditButton()->disableQuickEditButton();
             !$this->delete && $grid->disableDeleteButton();
 
-            if ($this->nameQuickSearch) {
-                $grid->customQuickSearch();
+            if ($this->quickSearchField) {
+                $grid->customQuickSearch($this->quickSearchField);
             }
 
             if ($this->useTrashFilter) {
