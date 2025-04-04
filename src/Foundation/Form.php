@@ -97,19 +97,7 @@ class Form extends Base
     )
     {
         return $form->select($field)
-            ->options(function ($id) use ($model, $idField, $nameField) {
-                $data = [];
-
-                if (!empty($id)) {
-                    $model = $model->find($id);
-
-                    if (!empty($model)) {
-                        $data[$model->$idField] = $model->$nameField;
-                    }
-                }
-
-                return $data;
-            })
+            ->options(fn($id) => $id ? $model->find($id)->pluck($nameField, $idField) : [])
             ->addDefaultConfig(array_merge(['minimumInputLength' => 0], $defaultConfig))
             ->ajax($api);
     }
