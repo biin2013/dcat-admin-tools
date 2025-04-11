@@ -2,15 +2,17 @@
 
 namespace Biin2013\DcatAdminTools\Foundation;
 
+use Illuminate\Contracts\Database\Query\Expression;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Support\Facades\DB;
 use Psr\Container\ContainerExceptionInterface;
 use Psr\Container\NotFoundExceptionInterface;
 
 class ApiController extends Controller
 {
     protected string $modelClass;
-    protected string $nameField = 'name';
+    protected string|array $nameField = 'name';
     protected string $idField = 'id';
     protected string $orderField = 'id';
     protected string $order = 'desc';
@@ -18,6 +20,7 @@ class ApiController extends Controller
     protected string $queryField = 'name';
     protected string $queryCondition = 'like';
     protected bool $paginateResponse = true;
+    protected string $nameSeparator = ' - ';
 
     /**
      * @throws ContainerExceptionInterface
@@ -50,13 +53,22 @@ class ApiController extends Controller
         return $model->orderBy($this->orderField, $this->order);
     }
 
+    protected function resolveNameField(): string|Expression
+    {
+        if (is_array($this->nameField)) {
+            return DB::raw('CONCAT(' . implode(',\'' . $this->nameSeparator . '\',', $this->nameField) . ') as text');
+        }
+
+        return $this->nameField . ' as text';
+    }
+
     protected function paginateResponse($model): LengthAwarePaginator
     {
-        return $model->paginate($this->limit, [$this->idField . ' as id', $this->nameField . ' as text']);
+        return $model->paginate($this->limit, [$this->idField . ' as id', $this->resolveNameField()]);
     }
 
     protected function simpleResponse($model): Collection
     {
-        return $model->limit($this->limit)->get(['id', $this->nameField . ' as text']);
+        return $model->limit($this->limit)->get(['id', $this->resolveNameField()]);
     }
 }
