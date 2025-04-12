@@ -34,4 +34,22 @@ class Helper
             default => $method,
         };
     }
+
+    /**
+     * @param int $number
+     * @return string
+     */
+    public static function numberToLetter(int $number): string
+    {
+        if ($number < 1) return '';
+
+        $result = '';
+        while ($number > 0) {
+            $number--;
+            $result = chr(65 + $number % 26) . $result;
+            $number = intval($number / 26);
+        }
+
+        return $result;
+    }
 }
