@@ -43,13 +43,29 @@ class Helper
     {
         if ($number < 1) return '';
 
-        $result = '';
+        $letter = '';
         while ($number > 0) {
             $number--;
-            $result = chr(65 + $number % 26) . $result;
+            $letter = chr(65 + $number % 26) . $letter;
             $number = intval($number / 26);
         }
 
-        return $result;
+        return $letter;
+    }
+
+    /**
+     * @param string $letter
+     * @return int
+     */
+    public static function letterToNumber(string $letter): int
+    {
+        $number = 0;
+        $length = strlen($$letter);
+
+        for ($i = 0; $i < $length; $i++) {
+            $number = $number * 26 + ord($letter[$i]) - 64;
+        }
+
+        return $number;
     }
 }
