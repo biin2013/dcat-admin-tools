@@ -68,9 +68,9 @@ class Grid extends Base
             ->showBatchDelete();
     }
 
-    public function useTrashFilter(): static
+    public function useTrashFilter(Closure $closure = null): static
     {
-        return $this->trashFilter()->restoreAction()->batchRestoreAction();
+        return $this->trashFilter()->restoreAction()->batchRestoreAction()->filter(fn(Filter $filter) => $closure && $closure($filter));
     }
 
     public function trashFilter(): static
