@@ -16,7 +16,7 @@ class LoadGrid
         $reflectionClass = new ReflectionClass($controllerClass);
         $controller = $reflectionClass->newInstance();
 
-        $translation = $reflectionClass->getMethod('resolveTranslation')
+        $translation = $reflectionClass->getMethod('translation')
             ->invoke($controller, $controllerClass);
         app('admin.translator')->setPath($translation);
 

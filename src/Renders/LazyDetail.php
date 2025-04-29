@@ -16,7 +16,7 @@ class LazyDetail extends LazyRenderable
         $reflectionClass = new ReflectionClass($this->payload['class']);
         $controller = $reflectionClass->newInstance();
 
-        $translation = $reflectionClass->getMethod('resolveTranslation')
+        $translation = $reflectionClass->getMethod('translation')
             ->invoke($controller, $this->payload['class']);
         app('admin.translator')->setPath($translation);
 
