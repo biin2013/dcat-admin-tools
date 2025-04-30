@@ -20,9 +20,11 @@ class LazyDetail extends LazyRenderable
             ->invoke($controller, $this->payload['class']);
         app('admin.translator')->setPath($translation);
 
-        return $reflectionClass->getMethod('detail')
-            ->invoke($controller, $this->payload['id'] ?? $this->key)
-            ->disableListButton()
+        $show = $reflectionClass->getMethod('detail')
+            ->invoke($controller, $this->payload['id'] ?? $this->key);
+        $show->panel()->title('');
+
+        return $show->disableListButton()
             ->disableEditButton()
             ->disableDeleteButton();
     }
