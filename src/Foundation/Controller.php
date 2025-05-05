@@ -3,7 +3,7 @@
 namespace Biin2013\DcatAdminTools\Foundation;
 
 use Biin2013\DcatAdminTools\Trait\UseValidate;
-use Dcat\Admin\Form;
+use Dcat\Admin\Form as BaseForm;
 use Dcat\Admin\Http\Controllers\AdminController;
 use Exception;
 use Illuminate\Contracts\Translation\Translator;
@@ -15,6 +15,23 @@ class Controller extends AdminController
     use UseValidate;
 
     protected string $modelClass;
+
+    protected string $uniqueField = 'name';
+    protected string $uniqueColumn;
+
+    public function createExtraRules(Form $form): array
+    {
+        return [
+            $this->uniqueField => [$this->validateUnique($form, $this->uniqueColumn ?? $this->uniqueField)]
+        ];
+    }
+
+    public function updateExtraRules(Form $form): array
+    {
+        return [
+            $this->uniqueField => [$this->validateUniqueIgnore($form, $this->uniqueColumn ?? $this->uniqueField)]
+        ];
+    }
 
     protected function title(): string
     {
@@ -93,11 +110,11 @@ class Controller extends AdminController
 
     protected function filterRemoveItem(array $data, bool $remove = true): array
     {
-        $filter = array_filter($data, fn($item) => $item[Form::REMOVE_FLAG_NAME] != 1);
+        $filter = array_filter($data, fn($item) => $item[BaseForm::REMOVE_FLAG_NAME] != 1);
 
         if ($remove) {
             $filter = array_map(function ($item) {
-                unset($item[Form::REMOVE_FLAG_NAME]);
+                unset($item[BaseForm::REMOVE_FLAG_NAME]);
                 return $item;
             }, $filter);
         }

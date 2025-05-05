@@ -36,7 +36,7 @@ class Form extends Base
         $this->submitted(fn(Form $form) => $form->autoValidate());
     }
 
-    public function disableDeleteButton(bool $disable = true)
+    public function disableDeleteButton(bool $disable = true): Form
     {
         $disable = $disable || Admin::user()->cannot(Helper::resolvePermissionHttpPath('destroy'));
 
