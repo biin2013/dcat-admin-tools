@@ -2,6 +2,7 @@
 
 namespace Biin2013\DcatAdminTools\Foundation;
 
+use Biin2013\DcatAdminTools\Foundation\Show\Field;
 use Biin2013\DcatAdminTools\Utils\Helper;
 use Closure;
 use Dcat\Admin\Admin;
@@ -62,5 +63,18 @@ class Show extends Base
                 ->body($content)
                 ->button('<button class="btn btn-sm btn-' . $btnType . '" type="button">' . $label . '</button>');
         })->unescape();
+    }
+
+    protected function addField($name, $label = ''): Field
+    {
+        $field = new Field($name, $label);
+
+        $field->setParent($this);
+
+        $this->overwriteExistingField($name);
+
+        $this->fields->push($field);
+
+        return $field;
     }
 }

@@ -4,6 +4,7 @@ namespace Biin2013\DcatAdminTools\Foundation;
 
 use Biin2013\DcatAdminTools\Actions\BatchRestore;
 use Biin2013\DcatAdminTools\Actions\Restore;
+use Biin2013\DcatAdminTools\Foundation\Grid\Column;
 use Biin2013\DcatAdminTools\Utils\Helper;
 use Closure;
 use Dcat\Admin\Admin;
@@ -154,5 +155,13 @@ class Grid extends Base
     public function customQuickSearch($field = 'name', $label = null): Base\Tools\QuickSearch
     {
         return $this->quickSearch($field)->placeholder($label ?? trans('admin.name'));
+    }
+
+    public function newColumn($field = '', $label = ''): Column
+    {
+        $column = new Column($field, $label);
+        $column->setGrid($this);
+
+        return $column;
     }
 }
