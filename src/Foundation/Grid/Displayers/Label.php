@@ -2,6 +2,7 @@
 
 namespace Biin2013\DcatAdminTools\Foundation\Grid\Displayers;
 
+use Dcat\Admin\Admin;
 use Dcat\Admin\Grid\Displayers\Label as BaseLabel;
 
 class Label extends BaseLabel
@@ -24,5 +25,18 @@ class Label extends BaseLabel
         return collect($value)->map(function ($name) use ($background) {
             return "<span class='{$this->baseClass}' {$background}>$name</span>";
         })->implode(' ');
+    }
+
+    protected function formatStyle($style): string
+    {
+        $background = 'style="background:#d2d6de;color: #555"';
+
+        if ($style !== 'default') {
+            $style = Admin::color()->get($style, $style);
+
+            $background = "style='background:{$style};cursor:default'";
+        }
+
+        return $background;
     }
 }
