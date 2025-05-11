@@ -2,6 +2,7 @@
 
 namespace Biin2013\DcatAdminTools\Console\Commands;
 
+use Biin2013\DcatAdminTools\Events\Import as ImportEvent;
 use Exception;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\DB;
@@ -115,6 +116,9 @@ STR;
         }
 
         $this->insertToDb($config, $data['data'], $exceptFields);
+
+        ImportEvent::dispatch($data);
+
         $this->info('import success');
     }
 
