@@ -9,7 +9,7 @@ use Throwable;
 
 class AdminConfig
 {
-    protected static string $table = 'admin_configs';
+    public static string $table = 'admin_configs';
 
     private static function resolveCacheKey(string $group): string
     {
