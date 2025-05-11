@@ -116,9 +116,6 @@ STR;
         }
 
         $this->insertToDb($config, $data['data'], $exceptFields);
-
-        ImportEvent::dispatch($data);
-
         $this->info('import success');
     }
 
@@ -162,6 +159,7 @@ STR;
                 }
 
                 DB::commit();
+                ImportEvent::dispatch(compact('config', 'data', 'exceptFields'));
             } catch (Exception $e) {
                 DB::rollBack();
                 throw $e;
