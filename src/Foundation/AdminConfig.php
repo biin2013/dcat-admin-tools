@@ -138,8 +138,15 @@ class AdminConfig
         };
     }
 
-    public static function clearCache(string $group): void
+    public static function clearCache(array|string $group): void
     {
+        if (is_array($group)) {
+            foreach ($group as $g) {
+                self::clearCache($g);
+            }
+            return;
+        }
+
         Cache::forget(self::resolveCacheKey($group));
         Cache::forget(self::resolveFormatCacheKey($group));
     }
