@@ -11,6 +11,7 @@ class SimpleController extends Controller
     protected array $formColumns = ['name' => 'text', 'brief' => 'textarea'];
     protected array $formRules = ['name' => ['required', 'max:45']];
     protected string $quickSearchField = 'name';
+    protected bool $useFilter = true;
     protected bool $useTrashFilter = true;
 
     protected bool $create = true;
@@ -37,9 +38,12 @@ class SimpleController extends Controller
                 $grid->customQuickSearch($this->quickSearchField, $this->quickSearchLabel());
             }
 
-            if ($this->useTrashFilter) {
+            if ($this->useFilter) {
                 $grid->filter(fn(Filter $filter) => $this->customFilter($filter));
-                $grid->useTrashFilter();
+
+                if ($this->useTrashFilter) {
+                    $grid->useTrashFilter();
+                }
             }
         }));
     }

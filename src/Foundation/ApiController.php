@@ -37,8 +37,15 @@ class ApiController extends Controller
             : $this->simpleResponse($model);
     }
 
+    protected function initWhere(Model $model): Model
+    {
+        return $model;
+    }
+
     protected function resolveWhere(Model $model, ?string $query = null)
     {
+        $model = $this->initWhere($model);
+
         if (!$query) return $model;
 
         if ($this->queryCondition === 'like') {
