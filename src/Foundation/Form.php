@@ -64,6 +64,8 @@ class Form extends Base
 
     public function autoValidate(): void
     {
+        $this->beforeValidate($this);
+
         $rules = $this->resolveRules();
 
         if (empty($rules)) return;
@@ -71,6 +73,11 @@ class Form extends Base
         foreach ($rules as $field => $rule) {
             $this->findFieldByName($field)?->rules($rule, $this->controller->messages($this)[$field] ?? []);
         }
+    }
+
+    protected function beforeValidate(Form $form): void
+    {
+        $this->controller?->beforeValidate($form);
     }
 
     protected function resolveRules(): array

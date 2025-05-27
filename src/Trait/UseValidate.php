@@ -13,6 +13,11 @@ use Illuminate\Validation\ValidationException;
 
 trait UseValidate
 {
+    public function beforeValidate(Form $form)
+    {
+
+    }
+
     public function rules(Form $form): array
     {
         return [];
