@@ -29,6 +29,7 @@ class ApiController extends Controller
     public function __invoke(): Collection|LengthAwarePaginator
     {
         $query = request()->get('q');
+        $this->paginateResponse = request()->get('p', $this->paginateResponse);
 
         $model = $this->order($this->resolveWhere(new $this->modelClass, $query));
 
