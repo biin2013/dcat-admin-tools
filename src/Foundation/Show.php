@@ -7,7 +7,6 @@ use Biin2013\DcatAdminTools\Utils\Helper;
 use Closure;
 use Dcat\Admin\Admin;
 use Dcat\Admin\Show as Base;
-use Dcat\Admin\Widgets\Modal;
 
 class Show extends Base
 {
@@ -39,30 +38,6 @@ class Show extends Base
         $disable = $disable || Admin::user()->cannot(Helper::resolvePermissionHttpPath('destroy'));
 
         return parent::disableDeleteButton($disable);
-    }
-
-    public function modal(
-        string $field,
-        mixed  $content,
-        string $label = '',
-        string $title = '',
-        string $btnType = 'primary',
-        string $size = 'lg'
-    ): void
-    {
-        $this->field($field)->as(function ($value) use ($content, $label, $title, $btnType, $size) {
-            $label = $label ?: $value;
-            if (empty($label)) {
-                return '';
-            }
-
-            return Modal::make()
-                ->title($title ?: $label)
-                ->size($size)
-                ->scrollable()
-                ->body($content)
-                ->button('<button class="btn btn-sm btn-' . $btnType . '" type="button">' . $label . '</button>');
-        })->unescape();
     }
 
     protected function addField($name, $label = ''): Field
