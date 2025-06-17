@@ -18,6 +18,7 @@ use Illuminate\Support\Facades\Schema;
 class Grid extends Base
 {
     protected ?Controller $controller;
+    protected string $deleteMessageField = 'name';
 
 
     /**
@@ -163,5 +164,15 @@ class Grid extends Base
         $column->setGrid($this);
 
         return $column;
+    }
+
+    public function getDeleteMessageTitle($row): string
+    {
+        return '';
+    }
+
+    public function getDeleteMessage($row): string
+    {
+        return $row->{$this->deleteMessageField};
     }
 }
