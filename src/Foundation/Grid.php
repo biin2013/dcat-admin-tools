@@ -19,7 +19,10 @@ class Grid extends Base
 {
     protected ?Controller $controller;
     protected string $deleteMessageField = 'name';
-
+    protected string $deleteMessage = '';
+    protected ?Closure $deleteMessageCallback = null;
+    protected string $deleteMessageTitle = '';
+    protected ?Closure $deleteMessageTitleCallback = null;
 
     /**
      * @param Controller|null $controller
@@ -166,13 +169,38 @@ class Grid extends Base
         return $column;
     }
 
-    public function getDeleteMessageTitle($row): string
+    public function setDeleteMessageField(string $field): static
     {
-        return '';
+        $this->deleteMessageField = $field;
+
+        return $this;
+    }
+
+    public function setDeleteMessage(Closure $closure): static
+    {
+        $this->deleteMessageCallback = $closure;
+
+        return $this;
     }
 
     public function getDeleteMessage($row): string
     {
-        return $row->{$this->deleteMessageField};
+        return $this->deleteMessageCallback
+            ? call_user_func($this->deleteMessageCallback, $row)
+            : $row->{$this->deleteMessageField};
+    }
+
+    public function setDeleteMessageTitle(Closure $closure): static
+    {
+        $this->deleteMessageTitleCallback = $closure;
+
+        return $this;
+    }
+
+    public function getDeleteMessageTitle($row): string
+    {
+        return $this->deleteMessageTitleCallback
+            ? call_user_func($this->deleteMessageTitleCallback, $row)
+            : $this->deleteMessageTitle;
     }
 }
