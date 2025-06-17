@@ -13,7 +13,7 @@ class Delete extends Base
         if ($this->parent instanceof Grid) {
             $message = $this->parent->getDeleteMessage($this->row);
             if ($title = $this->parent->getDeleteMessageTitle($this->row)) {
-                $message = $title . ' - ' . $message;
+                $message = $title . $this->parent->getDeleteMessageSeparator() . $message;
             }
         } else {
             $message = "ID - {$this->getKey()}";

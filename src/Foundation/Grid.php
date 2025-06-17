@@ -23,6 +23,7 @@ class Grid extends Base
     protected ?Closure $deleteMessageCallback = null;
     protected string $deleteMessageTitle = '';
     protected ?Closure $deleteMessageTitleCallback = null;
+    protected string $deleteMessageSeparator = '：';
 
     /**
      * @param Controller|null $controller
@@ -202,5 +203,17 @@ class Grid extends Base
         return $this->deleteMessageTitleCallback
             ? call_user_func($this->deleteMessageTitleCallback, $row)
             : $this->deleteMessageTitle;
+    }
+
+    public function setDeleteMessageSeparator(string $separator): static
+    {
+        $this->deleteMessageSeparator = $separator;
+
+        return $this;
+    }
+
+    public function getDeleteMessageSeparator(): string
+    {
+        return $this->deleteMessageSeparator;
     }
 }
