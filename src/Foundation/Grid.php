@@ -188,7 +188,7 @@ class Grid extends Base
     {
         return $this->deleteMessageCallback
             ? call_user_func($this->deleteMessageCallback, $row)
-            : $row->{$this->deleteMessageField};
+            : ($row->{$this->deleteMessageField} ?? '');
     }
 
     public function setDeleteMessageTitle(Closure $closure): static
