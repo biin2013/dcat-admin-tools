@@ -77,6 +77,6 @@ class ApiController extends Controller
 
     protected function simpleResponse($model): Collection
     {
-        return $model->limit($this->limit)->get(['id', $this->resolveNameField()]);
+        return $model->get(['id', $this->resolveNameField()]);
     }
 }
