@@ -3,8 +3,10 @@
 namespace Biin2013\DcatAdminTools\Foundation;
 
 use Biin2013\DcatAdminTools\Trait\UseValidate;
+use Dcat\Admin\Admin;
 use Dcat\Admin\Form as BaseForm;
 use Dcat\Admin\Http\Controllers\AdminController;
+use Dcat\Admin\Http\JsonResponse;
 use Exception;
 use Illuminate\Contracts\Translation\Translator;
 use Illuminate\Foundation\Application;
@@ -150,5 +152,12 @@ class Controller extends AdminController
         $route[] = 'index';
 
         return implode('.', $route);
+    }
+
+    protected function jsonResponse(string $message = null, string $redirect = null): JsonResponse
+    {
+        return Admin::json()
+            ->success($message ?? trans('admin.save_succeeded'))
+            ->redirect($redirect ?? route($this->getIndexRoute()));
     }
 }
