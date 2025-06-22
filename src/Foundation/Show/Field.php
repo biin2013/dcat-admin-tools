@@ -36,8 +36,11 @@ class Field extends BaseField
     ): Field
     {
         return $this->unescape()->as(function ($value) use ($content, $title, $btnType, $size) {
+            $resolveTitle = $title ?? $this->label ?? $value;
+            if (!$resolveTitle) return '';
+
             return Modal::make()
-                ->title($title ?? $this->label ?? $value)
+                ->title($resolveTitle)
                 ->size($size)
                 ->scrollable()
                 ->body($content)
