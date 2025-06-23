@@ -47,7 +47,9 @@ class Grid extends Base
 
         parent::__construct($repository, $builder, $request);
 
-        if (
+        if (request('_scope_') == 'trashed') {
+            $this->model()->orderBy('deleted_at', 'desc');
+        } else if (
             $this->model()->repository() &&
             Schema::hasColumn($this->model()->repository()->model()->getTable(), 'id')
         ) {
