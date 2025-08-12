@@ -9,8 +9,8 @@ class Model extends Base
 {
     use HasDateTimeFormatter;
 
-    public static string $orderColumn = 'id';
-    public static string $orderDirection = 'desc';
+    public static string $scopeOrderColumn = 'id';
+    public static string $scopeOrderDirection = 'desc';
 
     protected static function boot(): void
     {
@@ -18,7 +18,7 @@ class Model extends Base
 
         static::addGlobalScope(
             'order',
-            fn($query) => $query->orderBy(static::$orderColumn, static::$orderDirection)
+            fn($query) => $query->orderBy(static::$scopeOrderColumn, static::$scopeOrderDirection)
         );
     }
 }
