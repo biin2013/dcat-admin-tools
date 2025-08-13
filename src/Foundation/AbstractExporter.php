@@ -2,6 +2,7 @@
 
 namespace Biin2013\DcatAdminTools\Foundation;
 
+use Biin2013\Spreadsheet\Export;
 use Dcat\Admin\Grid\Exporter;
 use Dcat\Admin\Grid\Exporters\AbstractExporter as Base;
 use Illuminate\Support\Collection;
@@ -35,5 +36,58 @@ abstract class AbstractExporter extends Base
     public function buildData(?int $page = null, ?int $perPage = null)
     {
         return $this->normalize($this->buildOriginData($page, $perPage));
+    }
+
+    protected function model($model): void
+    {
+
+    }
+
+    public function export()
+    {
+        $this->model($this->grid->model());
+
+        $export = Export::make($this->resolveSheetData());
+        $this->type($export);
+        $export->build(public_path('export'))->export()->download();
+    }
+
+    protected function type(Export $export): void
+    {
+        $export->xlsx();
+    }
+
+    protected function resolveSheetData(): array
+    {
+        return array_filter(array_merge([$this->defaultSheetData()], $this->extraSheetData()));
+    }
+
+    protected function config(): array
+    {
+        return [];
+    }
+
+    protected function header(): array
+    {
+        return [];
+    }
+
+    protected function data(): array
+    {
+        return $this->buildOriginData()->toArray();
+    }
+
+    protected function defaultSheetData(): array
+    {
+        return [
+            'config' => $this->config(),
+            'header' => $this->header(),
+            'data' => $this->data()
+        ];
+    }
+
+    protected function extraSheetData(): array
+    {
+        return [[]];
     }
 }
