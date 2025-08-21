@@ -2,6 +2,8 @@
 
 namespace Biin2013\DcatAdminTools\Utils;
 
+use Dcat\Admin\Form as BaseForm;
+
 class Helper
 {
     /**
@@ -67,5 +69,19 @@ class Helper
         }
 
         return $number;
+    }
+
+    public static function filterRemoveItem(array $data, bool $remove = true): array
+    {
+        $filter = array_filter($data, fn($item) => $item[BaseForm::REMOVE_FLAG_NAME] != 1);
+
+        if ($remove) {
+            $filter = array_map(function ($item) {
+                unset($item[BaseForm::REMOVE_FLAG_NAME]);
+                return $item;
+            }, $filter);
+        }
+
+        return array_values($filter);
     }
 }
