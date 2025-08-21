@@ -3,8 +3,8 @@
 namespace Biin2013\DcatAdminTools\Foundation;
 
 use Biin2013\DcatAdminTools\Trait\UseValidate;
+use Biin2013\DcatAdminTools\Utils\Helper;
 use Dcat\Admin\Admin;
-use Dcat\Admin\Form as BaseForm;
 use Dcat\Admin\Http\Controllers\AdminController;
 use Dcat\Admin\Http\JsonResponse;
 use Exception;
@@ -107,21 +107,7 @@ class Controller extends AdminController
     public function filterHasManyRemoveItem(array &$data, string $field, bool $remove = true): void
     {
         $data[$field] = $data[$field] ?? [];
-        $data[$field] = $this->filterRemoveItem($data[$field], $remove);
-    }
-
-    protected function filterRemoveItem(array $data, bool $remove = true): array
-    {
-        $filter = array_filter($data, fn($item) => $item[BaseForm::REMOVE_FLAG_NAME] != 1);
-
-        if ($remove) {
-            $filter = array_map(function ($item) {
-                unset($item[BaseForm::REMOVE_FLAG_NAME]);
-                return $item;
-            }, $filter);
-        }
-
-        return array_values($filter);
+        $data[$field] = Helper::filterRemoveItem($data[$field], $remove);
     }
 
     public function trans(string $key, array $replace = []): Application|array|string|Translator
