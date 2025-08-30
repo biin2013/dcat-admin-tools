@@ -140,10 +140,11 @@ class Controller extends AdminController
         return implode('.', $route);
     }
 
-    protected function jsonResponse(string $message = null, string $redirect = null): JsonResponse
+    protected function jsonResponse(string $message = null, string|bool $redirect = null): JsonResponse
     {
-        return Admin::json()
-            ->success($message ?? trans('admin.save_succeeded'))
-            ->redirect($redirect ?? route($this->getIndexRoute()));
+        $response = Admin::json()->success($message ?? trans('admin.save_succeeded'));
+        if ($redirect === false) return $response;
+
+        return $response->redirect($redirect ?? route($this->getIndexRoute()));
     }
 }

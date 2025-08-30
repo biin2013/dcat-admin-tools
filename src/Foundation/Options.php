@@ -28,6 +28,10 @@ class Options
 
     protected static function response(array $data, $key = null, $default = null)
     {
+        if (is_array($key)) {
+            return array_intersect_key($data, array_flip($key));
+        }
+
         return $key === null ? $data : ($data[$key] ?? $default);
     }
 }
