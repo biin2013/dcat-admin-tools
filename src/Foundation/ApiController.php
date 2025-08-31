@@ -4,6 +4,7 @@ namespace Biin2013\DcatAdminTools\Foundation;
 
 use Illuminate\Contracts\Database\Query\Expression;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Support\Facades\DB;
 use Psr\Container\ContainerExceptionInterface;
@@ -38,7 +39,7 @@ class ApiController extends Controller
             : $this->simpleResponse($model);
     }
 
-    protected function initWhere(Model $model): Model
+    protected function initWhere(Model $model): Model|Builder
     {
         return $model;
     }
