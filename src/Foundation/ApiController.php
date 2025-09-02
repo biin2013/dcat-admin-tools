@@ -33,7 +33,7 @@ class ApiController extends Controller
         $this->paginateResponse = request()->get('p', $this->paginateResponse);
 
         $model = $this->order($this->resolveWhere(new $this->modelClass, $query))
-            ->withoutGlobalScopes('order');
+            ->withoutGlobalScope('order');
 
         return $this->paginateResponse
             ? $this->paginateResponse($model)
