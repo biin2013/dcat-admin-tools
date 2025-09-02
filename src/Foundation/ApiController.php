@@ -18,7 +18,7 @@ class ApiController extends Controller
     protected string $orderField = 'id';
     protected string $order = 'desc';
     protected int $limit = 20;
-    protected string $queryField = 'name';
+    protected string|array $queryField = 'name';
     protected string $queryCondition = 'like';
     protected bool $paginateResponse = true;
     protected string $nameSeparator = ' - ';
@@ -32,7 +32,8 @@ class ApiController extends Controller
         $query = request()->get('q');
         $this->paginateResponse = request()->get('p', $this->paginateResponse);
 
-        $model = $this->order($this->resolveWhere(new $this->modelClass, $query));
+        $model = $this->order($this->resolveWhere(new $this->modelClass, $query))
+            ->withoutGlobalScopes('order');
 
         return $this->paginateResponse
             ? $this->paginateResponse($model)
@@ -54,7 +55,9 @@ class ApiController extends Controller
             $query = '%' . $query . '%';
         }
 
-        return $model->where($this->queryField, $this->queryCondition, $query);
+        return is_array($this->queryField)
+            ? $model->where(fn($q) => array_map(fn($field) => $q->orWhere($field, $this->queryCondition, $query), $this->queryField))
+            : $model->where($this->queryField, $this->queryCondition, $query);
     }
 
     protected function order($model)
