@@ -3,9 +3,7 @@
 namespace Biin2013\DcatAdminTools\Foundation;
 
 use Illuminate\Contracts\Database\Query\Expression;
-use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Support\Facades\DB;
 use Psr\Container\ContainerExceptionInterface;
 use Psr\Container\NotFoundExceptionInterface;
@@ -22,12 +20,13 @@ class ApiController extends Controller
     protected string $queryCondition = 'like';
     protected bool $paginateResponse = true;
     protected string $nameSeparator = ' - ';
+    protected array $selectFields = [];
 
     /**
      * @throws ContainerExceptionInterface
      * @throws NotFoundExceptionInterface
      */
-    public function __invoke(): Collection|LengthAwarePaginator
+    public function __invoke()
     {
         $query = request()->get('q');
         $this->paginateResponse = request()->get('p', $this->paginateResponse);
@@ -74,13 +73,24 @@ class ApiController extends Controller
         return $this->nameField . ' as text';
     }
 
-    protected function paginateResponse($model): LengthAwarePaginator
+    protected function paginateResponse($model)
     {
-        return $model->paginate($this->limit, [$this->idField . ' as id', $this->resolveNameField()]);
+        $fields = $this->selectFields ?: [$this->idField . ' as id', $this->resolveNameField()];
+        return $this->customPaginateResponse($model->paginate($this->limit, $fields));
     }
 
-    protected function simpleResponse($model): Collection
+    protected function simpleResponse($model)
     {
-        return $model->get(['id', $this->resolveNameField()]);
+        return $this->customSimpleResponse($model->get($this->selectFields ?: ['id', $this->resolveNameField()]));
+    }
+
+    protected function customPaginateResponse($response)
+    {
+        return $response;
+    }
+
+    protected function customSimpleResponse($response)
+    {
+        return $response;
     }
 }
