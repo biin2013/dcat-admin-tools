@@ -3,7 +3,6 @@
 namespace Biin2013\DcatAdminTools\Foundation;
 
 use Illuminate\Contracts\Database\Query\Expression;
-use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Facades\DB;
 use Psr\Container\ContainerExceptionInterface;
 use Psr\Container\NotFoundExceptionInterface;
@@ -39,12 +38,12 @@ class ApiController extends Controller
             : $this->simpleResponse($model);
     }
 
-    protected function initWhere(Model $model): Model|Builder
+    protected function initWhere($model)
     {
         return $model;
     }
 
-    protected function resolveWhere(Model $model, ?string $query = null)
+    protected function resolveWhere($model, ?string $query = null)
     {
         $model = $this->initWhere($model);
 
