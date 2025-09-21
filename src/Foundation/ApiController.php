@@ -90,6 +90,6 @@ class ApiController extends Controller
 
     protected function customPaginateResponse($response)
     {
-        return $response->setCollection($this->customSimpleResponse($response));
+        return $response;
     }
 }
