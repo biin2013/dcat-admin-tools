@@ -72,24 +72,24 @@ class ApiController extends Controller
         return $this->nameField . ' as text';
     }
 
+    protected function simpleResponse($model)
+    {
+        return $this->customSimpleResponse($model->get($this->selectFields ?: ['id', $this->resolveNameField()]));
+    }
+
     protected function paginateResponse($model)
     {
         $fields = $this->selectFields ?: [$this->idField . ' as id', $this->resolveNameField()];
         return $this->customPaginateResponse($model->paginate($this->limit, $fields));
     }
 
-    protected function simpleResponse($model)
+    protected function customSimpleResponse($response)
     {
-        return $this->customSimpleResponse($model->get($this->selectFields ?: ['id', $this->resolveNameField()]));
+        return $response;
     }
 
     protected function customPaginateResponse($response)
     {
-        return $response;
-    }
-
-    protected function customSimpleResponse($response)
-    {
-        return $response;
+        return $response->setCollection($this->customSimpleResponse($response));
     }
 }
