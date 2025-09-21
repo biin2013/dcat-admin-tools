@@ -38,14 +38,14 @@ class ApiController extends Controller
             : $this->simpleResponse($model);
     }
 
-    protected function initWhere($model)
+    protected function initModel($model)
     {
         return $model;
     }
 
     protected function resolveWhere($model, ?string $query = null)
     {
-        $model = $this->initWhere($model);
+        $model = $this->initModel($model);
 
         if (!$query) return $model;
 
