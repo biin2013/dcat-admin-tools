@@ -13,22 +13,22 @@ use Illuminate\Validation\ValidationException;
 
 trait UseValidate
 {
-    public function beforeValidate(Form $form)
+    public function beforeValidate(Form $form = null)
     {
 
     }
 
-    public function rules(Form $form): array
-    {
-        return [];
-    }
-
-    public function createExtraRules(Form $form): array
+    public function rules(Form $form = null): array
     {
         return [];
     }
 
-    public function updateExtraRules(Form $form): array
+    public function createExtraRules(Form $form = null): array
+    {
+        return [];
+    }
+
+    public function updateExtraRules(Form $form = null): array
     {
         return [];
     }
@@ -40,7 +40,7 @@ trait UseValidate
         ];
     }
 
-    public function messages(Form $form): array
+    public function messages(Form $form = null): array
     {
         return [];
     }
