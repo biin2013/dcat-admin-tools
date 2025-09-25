@@ -18,17 +18,17 @@ trait UseValidate
 
     }
 
-    public function rules(Form $form = null): array
+    public function rules(Form $form): array
     {
         return [];
     }
 
-    public function createExtraRules(Form $form = null): array
+    public function createExtraRules(Form $form): array
     {
         return [];
     }
 
-    public function updateExtraRules(Form $form = null): array
+    public function updateExtraRules(Form $form): array
     {
         return [];
     }

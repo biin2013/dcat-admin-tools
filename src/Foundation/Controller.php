@@ -21,14 +21,14 @@ class Controller extends AdminController
     protected string $uniqueField = 'name';
     protected string $uniqueColumn;
 
-    public function createExtraRules(Form $form = null): array
+    public function createExtraRules(Form $form): array
     {
         return [
             $this->uniqueField => [$this->validateUnique($form, $this->uniqueColumn ?? $this->uniqueField)]
         ];
     }
 
-    public function updateExtraRules(Form $form = null): array
+    public function updateExtraRules(Form $form): array
     {
         return [
             $this->uniqueField => [$this->validateUniqueIgnore($form, $this->uniqueColumn ?? $this->uniqueField)]
