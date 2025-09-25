@@ -71,17 +71,22 @@ class Helper
         return $number;
     }
 
-    public static function filterRemoveItem(array $data, bool $remove = true): array
+    public static function filterRemoveItem(array $data, bool|array $remove = true, bool $resort = false): array
     {
         $filter = array_filter($data, fn($item) => $item[BaseForm::REMOVE_FLAG_NAME] != 1);
 
         if ($remove) {
-            $filter = array_map(function ($item) {
-                unset($item[BaseForm::REMOVE_FLAG_NAME]);
+            $remove = is_array($remove) ? $remove : [];
+            $remove[] = BaseForm::REMOVE_FLAG_NAME;
+
+            $filter = array_map(function ($item) use ($remove) {
+                foreach ($remove as $field) {
+                    unset($item[$field]);
+                }
                 return $item;
             }, $filter);
         }
 
-        return array_values($filter);
+        return $resort ? array_values($filter) : $filter;
     }
 }

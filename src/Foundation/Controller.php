@@ -104,10 +104,10 @@ class Controller extends AdminController
         return strtolower(implode('/', $path));
     }
 
-    public function filterHasManyRemoveItem(array &$data, string $field, bool $remove = true): void
+    public function filterHasManyRemoveItem(array &$data, string $field, bool $resort = true, bool|array $remove = true): void
     {
         $data[$field] = $data[$field] ?? [];
-        $data[$field] = Helper::filterRemoveItem($data[$field], $remove);
+        $data[$field] = Helper::filterRemoveItem($data[$field], $remove, $resort);
     }
 
     public function trans(string $key, array $replace = []): Application|array|string|Translator
