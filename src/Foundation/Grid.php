@@ -212,4 +212,36 @@ class Grid extends Base
     {
         return $this->deleteMessageSeparator;
     }
+
+    public function disableHeader(): static
+    {
+        $this->title('')
+            ->disableFilter()
+            ->disableFilterButton()
+            ->disableRefreshButton()
+            ->disableCreateButton();
+
+        return $this;
+    }
+
+    public function disableFooter(): static
+    {
+        $this->disablePagination()->disablePerPages();
+
+        return $this;
+    }
+
+    public function disableAllActions(): static
+    {
+        $this->disableActions()->disableBatchActions()->disableBatchDelete()->disableRowSelector();
+
+        return $this;
+    }
+
+    public function onlyView(): static
+    {
+        $this->disableHeader()->disableFooter()->disableAllActions();
+
+        return $this;
+    }
 }
