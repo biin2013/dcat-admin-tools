@@ -23,6 +23,8 @@ class Grid extends Base
     protected string $deleteMessageTitle = '';
     protected ?Closure $deleteMessageTitleCallback = null;
     protected string $deleteMessageSeparator = '：';
+    protected array $prependRows = [];
+    protected array $appendRows = [];
 
     /**
      * @param Controller|null $controller
@@ -241,6 +243,33 @@ class Grid extends Base
     public function onlyView(): static
     {
         $this->disableHeader()->disableFooter()->disableAllActions();
+
+        return $this;
+    }
+
+    protected function buildRows($data): void
+    {
+        parent::buildRows($data);
+
+        foreach ($this->prependRows as $row) {
+            $this->rows->unshift(new Base\Row($this, $row));
+        }
+
+        foreach ($this->appendRows as $row) {
+            $this->rows->push(new Base\Row($this, $row));
+        }
+    }
+
+    public function prependRow(array $row): static
+    {
+        array_unshift($this->prependRows, $row);
+
+        return $this;
+    }
+
+    public function appendRow(array $row): static
+    {
+        $this->appendRows[] = $row;
 
         return $this;
     }
