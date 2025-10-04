@@ -260,9 +260,12 @@ class Grid extends Base
         }
     }
 
-    protected function resolveRow(array|Closure $row, $data)
+    protected function resolveRow(array|Closure $row, $data): Base\Row
     {
         $row = is_callable($row) ? call_user_func($row, $data) : $row;
+        $field = $this->options['row_selector'] ? $this->columnNames[1] : $this->columnNames[0];
+        $row[$field] = trans('global.fields.summation');
+
         return new Base\Row($this, $row);
     }
 
