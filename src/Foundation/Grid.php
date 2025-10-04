@@ -252,22 +252,28 @@ class Grid extends Base
         parent::buildRows($data);
 
         foreach ($this->prependRows as $row) {
-            $this->rows->unshift(new Base\Row($this, $row));
+            $this->rows->unshift($this->resolveRow($row, $data));
         }
 
         foreach ($this->appendRows as $row) {
-            $this->rows->push(new Base\Row($this, $row));
+            $this->rows->push($this->resolveRow($row, $data));
         }
     }
 
-    public function prependRow(array $row): static
+    protected function resolveRow(array|Closure $row, $data)
+    {
+        $row = is_callable($row) ? call_user_func($row, $data) : $row;
+        return new Base\Row($this, $row);
+    }
+
+    public function prependRow(array|Closure $row): static
     {
         array_unshift($this->prependRows, $row);
 
         return $this;
     }
 
-    public function appendRow(array $row): static
+    public function appendRow(array|Closure $row): static
     {
         $this->appendRows[] = $row;
 
