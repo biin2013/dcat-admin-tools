@@ -263,6 +263,9 @@ class Grid extends Base
     protected function resolveRow(array|Closure $row, $data): Base\Row
     {
         $row = is_callable($row) ? call_user_func($row, $data) : $row;
+        foreach ($row as $key => $value) {
+            $row[$key] = is_callable($value) ? call_user_func($value, $data) : $value;
+        }
         $field = $this->options['row_selector'] ? $this->columnNames[1] : $this->columnNames[0];
         $row[$field] = trans('global.fields.summation');
 
