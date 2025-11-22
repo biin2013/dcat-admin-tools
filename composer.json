@@ -16,12 +16,5 @@
     "php": "^8.2",
     "dcat-plus/laravel-admin": "^2.0",
     "biin2013/spreadsheet": "^1.0"
-  },
-  "extra": {
-    "laravel": {
-      "providers": [
-        "Biin2013\\DcatAdminTools\\AdminToolsServiceProvider"
-      ]
-    }
   }
 }
