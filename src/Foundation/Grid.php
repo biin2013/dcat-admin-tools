@@ -13,7 +13,6 @@ use Dcat\Admin\Grid\Displayers\Actions;
 use Dcat\Admin\Grid\Filter;
 use Dcat\Admin\Grid\Tools\BatchActions;
 use Exception;
-use Illuminate\Support\Facades\Schema;
 
 class Grid extends Base
 {
@@ -24,6 +23,8 @@ class Grid extends Base
     protected string $deleteMessageTitle = '';
     protected ?Closure $deleteMessageTitleCallback = null;
     protected string $deleteMessageSeparator = '：';
+    protected array $prependRows = [];
+    protected array $appendRows = [];
 
     /**
      * @param Controller|null $controller
@@ -47,11 +48,8 @@ class Grid extends Base
 
         parent::__construct($repository, $builder, $request);
 
-        if (
-            $this->model()->repository() &&
-            Schema::hasColumn($this->model()->repository()->model()->getTable(), 'id')
-        ) {
-            $this->model()->orderBy('id', 'desc');
+        if (request('_scope_') == 'trashed') {
+            $this->model()->withoutGlobalScope('order')->orderBy('deleted_at', 'desc');
         }
 
         $this->controller = $controller;
@@ -215,5 +213,76 @@ class Grid extends Base
     public function getDeleteMessageSeparator(): string
     {
         return $this->deleteMessageSeparator;
+    }
+
+    public function disableHeader(): static
+    {
+        $this->title('')
+            ->disableFilter()
+            ->disableFilterButton()
+            ->disableRefreshButton()
+            ->disableCreateButton();
+
+        return $this;
+    }
+
+    public function disableFooter(): static
+    {
+        $this->disablePagination()->disablePerPages();
+
+        return $this;
+    }
+
+    public function disableAllActions(): static
+    {
+        $this->disableActions()->disableBatchActions()->disableBatchDelete()->disableRowSelector();
+
+        return $this;
+    }
+
+    public function onlyView(): static
+    {
+        $this->disableHeader()->disableFooter()->disableAllActions();
+
+        return $this;
+    }
+
+    protected function buildRows($data): void
+    {
+        parent::buildRows($data);
+
+        foreach ($this->prependRows as $row) {
+            $this->rows->unshift($this->resolveRow($row, $data));
+        }
+
+        foreach ($this->appendRows as $row) {
+            $this->rows->push($this->resolveRow($row, $data));
+        }
+    }
+
+    protected function resolveRow(array|Closure $row, $data): Base\Row
+    {
+        $row = is_callable($row) ? call_user_func($row, $data) : $row;
+        foreach ($row as $key => $value) {
+            $row[$key] = is_callable($value) ? call_user_func($value, $data) : $value;
+        }
+        $field = $this->options['row_selector'] ? $this->columnNames[1] : $this->columnNames[0];
+        $row[$field] = trans('global.fields.summation');
+
+        return new Base\Row($this, $row);
+    }
+
+    public function prependRow(array|Closure $row): static
+    {
+        array_unshift($this->prependRows, $row);
+
+        return $this;
+    }
+
+    public function appendRow(array|Closure $row): static
+    {
+        $this->appendRows[] = $row;
+
+        return $this;
     }
 }

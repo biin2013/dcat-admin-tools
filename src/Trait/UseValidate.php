@@ -13,7 +13,7 @@ use Illuminate\Validation\ValidationException;
 
 trait UseValidate
 {
-    public function beforeValidate(Form $form)
+    public function beforeValidate(Form $form = null)
     {
 
     }
@@ -40,7 +40,7 @@ trait UseValidate
         ];
     }
 
-    public function messages(Form $form): array
+    public function messages(Form $form = null): array
     {
         return [];
     }

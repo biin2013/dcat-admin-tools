@@ -18,6 +18,8 @@ class SimpleController extends Controller
     protected bool $edit = true;
     protected bool $delete = true;
     protected bool $show = true;
+    protected bool $continueCreate = true;
+    protected bool $continueCreateChecked = true;
 
     protected function grid(): Grid
     {
@@ -89,6 +91,8 @@ class SimpleController extends Controller
                     ? $custom[$column]($form)
                     : $this->defaultFormField($form, $type, $column);
             }
+            $form->disableCreatingCheck(!$this->continueCreate)
+                ->defaultCreatingChecked($this->continueCreateChecked);
         }));
     }
 

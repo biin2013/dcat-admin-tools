@@ -40,6 +40,16 @@ class Show extends Base
         return parent::disableDeleteButton($disable);
     }
 
+    public function disableHeader(): Show
+    {
+        $this->disableDeleteButton();
+        $this->disableEditButton();
+        $this->disableListButton();
+        $this->panel->title('');
+
+        return $this;
+    }
+
     protected function addField($name, $label = ''): Field
     {
         $field = new Field($name, $label);

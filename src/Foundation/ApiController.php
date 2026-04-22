@@ -3,8 +3,6 @@
 namespace Biin2013\DcatAdminTools\Foundation;
 
 use Illuminate\Contracts\Database\Query\Expression;
-use Illuminate\Contracts\Pagination\LengthAwarePaginator;
-use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Support\Facades\DB;
 use Psr\Container\ContainerExceptionInterface;
 use Psr\Container\NotFoundExceptionInterface;
@@ -17,35 +15,37 @@ class ApiController extends Controller
     protected string $orderField = 'id';
     protected string $order = 'desc';
     protected int $limit = 20;
-    protected string $queryField = 'name';
+    protected string|array $queryField = 'name';
     protected string $queryCondition = 'like';
     protected bool $paginateResponse = true;
     protected string $nameSeparator = ' - ';
+    protected array $selectFields = [];
 
     /**
      * @throws ContainerExceptionInterface
      * @throws NotFoundExceptionInterface
      */
-    public function __invoke(): Collection|LengthAwarePaginator
+    public function __invoke()
     {
         $query = request()->get('q');
         $this->paginateResponse = request()->get('p', $this->paginateResponse);
 
-        $model = $this->order($this->resolveWhere(new $this->modelClass, $query));
+        $model = $this->order($this->resolveWhere(new $this->modelClass, $query))
+            ->withoutGlobalScope('order');
 
         return $this->paginateResponse
             ? $this->paginateResponse($model)
             : $this->simpleResponse($model);
     }
 
-    protected function initWhere(Model $model): Model
+    protected function initModel($model)
     {
         return $model;
     }
 
-    protected function resolveWhere(Model $model, ?string $query = null)
+    protected function resolveWhere($model, ?string $query = null)
     {
-        $model = $this->initWhere($model);
+        $model = $this->initModel($model);
 
         if (!$query) return $model;
 
@@ -53,7 +53,9 @@ class ApiController extends Controller
             $query = '%' . $query . '%';
         }
 
-        return $model->where($this->queryField, $this->queryCondition, $query);
+        return is_array($this->queryField)
+            ? $model->where(fn($q) => array_map(fn($field) => $q->orWhere($field, $this->queryCondition, $query), $this->queryField))
+            : $model->where($this->queryField, $this->queryCondition, $query);
     }
 
     protected function order($model)
@@ -70,13 +72,24 @@ class ApiController extends Controller
         return $this->nameField . ' as text';
     }
 
-    protected function paginateResponse($model): LengthAwarePaginator
+    protected function simpleResponse($model)
     {
-        return $model->paginate($this->limit, [$this->idField . ' as id', $this->resolveNameField()]);
+        return $this->customSimpleResponse($model->get($this->selectFields ?: ['id', $this->resolveNameField()]));
     }
 
-    protected function simpleResponse($model): Collection
+    protected function paginateResponse($model)
     {
-        return $model->limit($this->limit)->get(['id', $this->resolveNameField()]);
+        $fields = $this->selectFields ?: [$this->idField . ' as id', $this->resolveNameField()];
+        return $this->customPaginateResponse($model->paginate($this->limit, $fields));
+    }
+
+    protected function customSimpleResponse($response)
+    {
+        return $response;
+    }
+
+    protected function customPaginateResponse($response)
+    {
+        return $response;
     }
 }

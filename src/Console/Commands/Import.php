@@ -106,7 +106,7 @@ STR;
                 ''
             ], 0);
             if ($result) {
-                $this->info('selected: value');
+                $this->info('selected: ' . $result);
                 $exceptFields[] = $result;
             }
         }
@@ -151,11 +151,22 @@ STR;
             DB::beginTransaction();
             try {
                 foreach ($data as $v) {
-                    DB::table($config['table'])
+                    /*DB::table($config['table'])
                         ->updateOrInsert(
                             array_combine($config['primary_key'], array_map(fn($val) => $v[$val], $config['primary_key'])),
                             array_diff_key($v, array_flip($exceptFields))
-                        );
+                        );*/
+                    $where = array_combine($config['primary_key'], array_map(fn($val) => $v[$val], $config['primary_key']));
+                    $exists = DB::table($config['table'])
+                        ->where($where)
+                        ->exists();
+                    if ($exists) {
+                        DB::table($config['table'])
+                            ->where($where)
+                            ->update(array_diff_key($v, array_flip($exceptFields)));
+                    } else {
+                        DB::table($config['table'])->insert($v);
+                    }
                 }
 
                 DB::commit();

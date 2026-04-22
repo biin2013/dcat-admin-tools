@@ -3,8 +3,10 @@
 namespace Biin2013\DcatAdminTools\Foundation;
 
 use Biin2013\DcatAdminTools\Trait\UseValidate;
-use Dcat\Admin\Form as BaseForm;
+use Biin2013\DcatAdminTools\Utils\Helper;
+use Dcat\Admin\Admin;
 use Dcat\Admin\Http\Controllers\AdminController;
+use Dcat\Admin\Http\JsonResponse;
 use Exception;
 use Illuminate\Contracts\Translation\Translator;
 use Illuminate\Foundation\Application;
@@ -102,24 +104,10 @@ class Controller extends AdminController
         return strtolower(implode('/', $path));
     }
 
-    public function filterHasManyRemoveItem(array &$data, string $field, bool $remove = true): void
+    public function filterHasManyRemoveItem(array &$data, string $field, bool $resort = true, bool|array $remove = true): void
     {
         $data[$field] = $data[$field] ?? [];
-        $data[$field] = $this->filterRemoveItem($data[$field], $remove);
-    }
-
-    protected function filterRemoveItem(array $data, bool $remove = true): array
-    {
-        $filter = array_filter($data, fn($item) => $item[BaseForm::REMOVE_FLAG_NAME] != 1);
-
-        if ($remove) {
-            $filter = array_map(function ($item) {
-                unset($item[BaseForm::REMOVE_FLAG_NAME]);
-                return $item;
-            }, $filter);
-        }
-
-        return array_values($filter);
+        $data[$field] = Helper::filterRemoveItem($data[$field], $remove, $resort);
     }
 
     public function trans(string $key, array $replace = []): Application|array|string|Translator
@@ -150,5 +138,13 @@ class Controller extends AdminController
         $route[] = 'index';
 
         return implode('.', $route);
+    }
+
+    protected function jsonResponse(string $message = null, string|bool $redirect = null): JsonResponse
+    {
+        $response = Admin::json()->success($message ?? trans('admin.save_succeeded'));
+        if ($redirect === false) return $response;
+
+        return $response->redirect($redirect ?? route($this->getIndexRoute()));
     }
 }

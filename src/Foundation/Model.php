@@ -2,12 +2,23 @@
 
 namespace Biin2013\DcatAdminTools\Foundation;
 
+use Dcat\Admin\Traits\HasDateTimeFormatter;
 use Illuminate\Database\Eloquent\Model as Base;
 
 class Model extends Base
 {
-    protected function serializeDate(\DateTimeInterface $date): string
+    use HasDateTimeFormatter;
+
+    public static string $scopeOrderColumn = 'id';
+    public static string $scopeOrderDirection = 'desc';
+
+    protected static function boot(): void
     {
-        return $date->format('Y-m-d H:i:s'); // 去掉 TZ 的格式
+        parent::boot();
+
+        static::addGlobalScope(
+            'order',
+            fn($query) => $query->orderBy(static::$scopeOrderColumn, static::$scopeOrderDirection)
+        );
     }
 }
