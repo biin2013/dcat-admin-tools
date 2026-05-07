@@ -6,5 +6,5 @@ use Biin2013\DcatAdminTools\Foundation\Model;
 
 class Config extends Model
 {
-    protected $table = 'admin_config';
+    protected $table = 'admin_configs';
 }
