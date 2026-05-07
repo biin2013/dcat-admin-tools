@@ -61,7 +61,7 @@ class AdminConfig
         } else {
             $configs = Cache::rememberForever(
                 $cacheKey,
-                fn() => self::$model->where('group', $group)->get()->pluck(null, 'key')->toArray()
+                fn() => self::$model::query()->where('group', $group)->get()->pluck(null, 'key')->toArray()
             );
         }
 
@@ -97,7 +97,7 @@ class AdminConfig
      */
     public static function set(string $group, string $key, mixed $value): void
     {
-        $type = self::$model
+        $type = self::$model::query()
             ->where('group', $group)
             ->where('key', $key)
             ->value('type');
@@ -106,7 +106,7 @@ class AdminConfig
             throw new Exception('config group[' . $group . '] key[' . $key . '] not found');
         }
 
-        self::$model
+        self::$model::query()
             ->where('group', $group)
             ->where('key', $key)
             ->update([
@@ -154,7 +154,7 @@ class AdminConfig
 
     public static function clearAllCache(): void
     {
-        self::$model->distinct()->pluck('group')->each(
+        self::$model::query()->distinct()->pluck('group')->each(
             fn($group) => self::clearCache($group)
         );
     }
