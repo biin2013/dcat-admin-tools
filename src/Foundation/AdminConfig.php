@@ -2,6 +2,7 @@
 
 namespace Biin2013\DcatAdminTools\Foundation;
 
+use Biin2013\DcatAdminTools\Model\Config;
 use Exception;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
@@ -9,7 +10,7 @@ use Throwable;
 
 class AdminConfig
 {
-    public static string $table = 'admin_configs';
+    public static string $model = Config::class;
 
     private static function resolveCacheKey(string $group): string
     {
@@ -60,7 +61,7 @@ class AdminConfig
         } else {
             $configs = Cache::rememberForever(
                 $cacheKey,
-                fn() => DB::table(self::$table)->where('group', $group)->get()->pluck(null, 'key')->toArray()
+                fn() => self::$model->where('group', $group)->get()->pluck(null, 'key')->toArray()
             );
         }
 
@@ -96,7 +97,7 @@ class AdminConfig
      */
     public static function set(string $group, string $key, mixed $value): void
     {
-        $type = DB::table(self::$table)
+        $type = self::$model
             ->where('group', $group)
             ->where('key', $key)
             ->value('type');
@@ -105,7 +106,7 @@ class AdminConfig
             throw new Exception('config group[' . $group . '] key[' . $key . '] not found');
         }
 
-        DB::table(self::$table)
+        self::$model
             ->where('group', $group)
             ->where('key', $key)
             ->update([
@@ -153,7 +154,7 @@ class AdminConfig
 
     public static function clearAllCache(): void
     {
-        DB::table(self::$table)->distinct()->pluck('group')->each(
+        self::$model->distinct()->pluck('group')->each(
             fn($group) => self::clearCache($group)
         );
     }
