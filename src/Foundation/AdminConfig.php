@@ -154,7 +154,7 @@ class AdminConfig
 
     public static function clearAllCache(): void
     {
-        self::$model::query()->distinct()->pluck('group')->each(
+        self::$model::query()->pluck('group')->unique()->each(
             fn($group) => self::clearCache($group)
         );
     }
