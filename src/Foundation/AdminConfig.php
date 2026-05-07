@@ -25,7 +25,7 @@ class AdminConfig
     public static function getValue(string $group, string $key = null)
     {
         return $key
-            ? self::get($group)[$key]->value ?? null
+            ? self::get($group)[$key]['value'] ?? null
             : array_column(self::get($group), 'value', 'key');
     }
 
@@ -42,7 +42,7 @@ class AdminConfig
                     $origin = self::getOrigin($group);
                     array_walk(
                         $origin,
-                        fn(&$item) => $item->value = self::formatResponse($item->type, $item->value)
+                        fn(&$item) => $item['value'] = self::formatResponse($item['type'], $item['value'])
                     );
                     return $origin;
                 }
@@ -76,7 +76,7 @@ class AdminConfig
     public static function getOriginValue(string $group, string $key = null)
     {
         return $key
-            ? self::getOrigin($group)[$key]->value ?? null
+            ? self::getOrigin($group)[$key]['value'] ?? null
             : array_column(self::getOrigin($group), 'value', 'key');
     }
 
