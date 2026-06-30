@@ -15,5 +15,13 @@
   "require": {
     "php": "^8.3",
     "dcat-plus/laravel-admin": "^2.0"
+  },
+  "extra": {
+    "laravel": {
+      "commands": [
+        "Biin2013\\DcatAdminTools\\Console\\Commands\\Import",
+        "Biin2013\\DcatAdminTools\\Console\\Commands\\Menu"
+      ]
+    }
   }
 }
