@@ -35,9 +35,9 @@ class ConfigController extends Controller
         $config = AdminConfig::get($this->group);
         $customForm = $this->customFormItem();
         foreach ($config as $item) {
-            isset($customForm[$item->key])
-                ? $customForm[$item->key]($form, $item->value)
-                : $this->resolveFormItem($form, $item->key, $item->type, $item->value);
+            isset($customForm[$item['key']])
+                ? $customForm[$item['key']]($form, $item['value'])
+                : $this->resolveFormItem($form, $item['key'], $item['type'], $item['value']);
 
         }
     }
