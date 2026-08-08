@@ -20,10 +20,6 @@
     "laravel": {
       "providers": [
         "Biin2013\\DcatAdminTools\\DcatAdminToolsServiceProvider"
-      ],
-      "commands": [
-        "Biin2013\\DcatAdminTools\\Console\\Commands\\Import",
-        "Biin2013\\DcatAdminTools\\Console\\Commands\\Menu"
       ]
     }
   }

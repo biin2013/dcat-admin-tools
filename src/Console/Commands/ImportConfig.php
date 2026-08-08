@@ -6,15 +6,16 @@ use Biin2013\DcatAdminTools\Events\Import as ImportEvent;
 use Exception;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\DB;
+use Throwable;
 
-class Import extends Command
+class ImportConfig extends Command
 {
     /**
      * The name and signature of the console command.
      *
      * @var string
      */
-    protected $signature = 'admin:import
+    protected $signature = 'admin:import-config
                         { path : file path, start with config_path/imports  },
                         { --E|except=* : except update fields },
                         { --O|only=* : only update fields },
@@ -89,7 +90,7 @@ STR;
      */
     public function handle()
     {
-        $this->info('start import');
+        $this->info('start import config');
         $path = config_path('imports/' . $this->argument('path') . '.php');
         $data = require $path;
         $config = $this->resolveConfig($data['config'] ?? []);
@@ -135,7 +136,7 @@ STR;
     }
 
     /**
-     * @throws Exception
+     * @throws Exception|Throwable
      */
     private function insertToDb(array $config, array $data, array $exceptFields): void
     {
