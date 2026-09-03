@@ -3,6 +3,7 @@
 namespace Biin2013\DcatAdminTools\Foundation\Grid;
 
 use Biin2013\DcatAdminTools\Foundation\Grid\Displayers\Label;
+use Biin2013\DcatAdminTools\Foundation\Grid\Displayers\Layer;
 use Dcat\Admin\Grid\Column as BaseColumn;
 
 class Column extends BaseColumn
@@ -12,5 +13,6 @@ class Column extends BaseColumn
         parent::__construct($name, $label);
 
         self::$displayers['label'] = Label::class;
+        self::$displayers['layer'] = Layer::class;
     }
 }
