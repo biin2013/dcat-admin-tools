@@ -21,6 +21,6 @@ class DcatAdminToolsServiceProvider extends ServiceProvider
 
     public function boot(): void
     {
-        Admin::script(file_get_contents('./asserts/js/common.js'));
+        Admin::script(file_get_contents('./Asserts/js/common.js'));
     }
 }
