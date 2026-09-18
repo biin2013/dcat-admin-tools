@@ -5,6 +5,7 @@ namespace Biin2013\DcatAdminTools;
 use Biin2013\DcatAdminTools\Console\Commands\ImportConfig;
 use Biin2013\DcatAdminTools\Console\Commands\ImportDb;
 use Biin2013\DcatAdminTools\Console\Commands\Menu;
+use Dcat\Admin\Admin;
 use Illuminate\Support\ServiceProvider;
 
 class DcatAdminToolsServiceProvider extends ServiceProvider
@@ -16,5 +17,10 @@ class DcatAdminToolsServiceProvider extends ServiceProvider
             ImportDb::class,
             Menu::class
         ]);
+    }
+
+    public function boot(): void
+    {
+        Admin::script(include './asserts/js/common.js');
     }
 }

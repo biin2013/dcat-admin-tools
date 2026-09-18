@@ -48,4 +48,52 @@ class Field extends BaseField
                     ($this->label ?? $title ?? $value) . '</button>');
         });
     }
+
+    public function layer(
+        mixed  $label,
+        mixed  $callback,
+        string $title = '',
+        string $icon = '',
+        string $btnType = 'primary',
+        string $width = '80vw',
+        string $height = '80vh'
+    ): Field
+    {
+        if (!$label) return $this->as('');
+
+        return $this->renderButton(
+            $callback->getUrl(),
+            $label,
+            $title ?: $label,
+            $icon,
+            $btnType,
+            $width,
+            $height
+        );
+    }
+
+    protected function renderButton(
+        string $url,
+        string $label,
+        string $title,
+        string $icon,
+        string $btnType,
+        string $width,
+        string $heigh
+    ): Field
+    {
+        $icon = $icon ? "<i class='{$icon}'></i>&nbsp;&nbsp;" : '';
+
+        return $this->unescape()->as(fn() => "<button
+                    type='button'
+                    class='open-layer btn btn-{$btnType}'
+                    data-url='{$url}'
+                    data-title='{$title}'
+                    data-width='{$width}'
+                    data-height='{$heigh}'
+                >
+                    {$icon}{$label}
+                </button>"
+        );
+    }
 }
