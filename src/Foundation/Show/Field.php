@@ -82,7 +82,8 @@ class Field extends BaseField
         string $heigh
     ): Field
     {
-        $icon = $icon ? "<i class='{$icon}'></i>&nbsp;&nbsp;" : '';
+        $icon = $icon ? "<i class='{$icon}'></i>" : '';
+        $text = implode('&nbsp;&nbsp;', array_filter([$icon, $label]));
 
         return $this->unescape()->as(fn() => "<button
                     type='button'
@@ -92,7 +93,7 @@ class Field extends BaseField
                     data-width='{$width}'
                     data-height='{$heigh}'
                 >
-                    {$icon}{$label}
+                    {$text}
                 </button>"
         );
     }
