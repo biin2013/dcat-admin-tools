@@ -56,7 +56,7 @@ class Field extends BaseField
         string $icon = '',
         string $btnType = 'primary',
         string $width = '80vw',
-        string $height = '80vh'
+        string $height = 'auto'
     ): Field
     {
         if (!$label) return $this->as('');

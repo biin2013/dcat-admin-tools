@@ -2,77 +2,78 @@
 
 namespace Biin2013\DcatAdminTools\Foundation\Grid\Displayers;
 
+use Closure;
 use Dcat\Admin\Grid\Displayers\AbstractDisplayer;
+use Dcat\Admin\Support\LazyRenderable;
 
 class Layer extends AbstractDisplayer
 {
-    protected string $title = '';
-    protected string $icon = '';
-    protected string $buttonType = 'primary';
-    protected string $layerWidth = '80vw';
-    protected string $layerHeight = '80vh';
-
-    public function title(string $title): static
-    {
-        $this->title = $title;
-
-        return $this;
-    }
-
-    public function icon(string $icon): static
-    {
-        $this->icon = $icon;
-
-        return $this;
-    }
-
-    public function buttonType(string $type): static
-    {
-        $this->buttonType = $type;
-
-        return $this;
-    }
-
-    public function layerWidth(string $width): static
-    {
-        $this->layerWidth = $width;
-
-        return $this;
-    }
-
-    public function layerHeight(string $height): static
-    {
-        $this->layerHeight = $height;
-
-        return $this;
-    }
-
     public function display($callback = null)
     {
+        $attributes = null;
         if (func_num_args() == 2) {
-            [$title, $callback] = func_get_args();
+            [$callback, $attributes] = func_get_args();
         }
 
-        $title = $title ?? ($this->title ?: $this->value);
+        $url = $callback;
+        if ($callback instanceof Closure) {
+            $url = $callback->call($this->row, $this);
 
-        $callback = $callback->call($this->row, $this);
+            if ($url instanceof LazyRenderable) {
+                $url = $url->getUrl();
+            }
+        }
 
-        return $this->renderButton($callback->getUrl(), $title);
+        if ($attributes instanceof Closure) {
+            $attributes = $attributes->call($this->row, $this);
+        }
+        $attributes = array_merge($this->defaultAttributes(), $attributes ?? []);
+
+        return $this->renderButton(
+            $url,
+            $attributes['title'],
+            $attributes['label'],
+            $attributes['icon'],
+            $attributes['btn'],
+            $attributes['width'],
+            $attributes['height']
+        );
     }
 
-    protected function renderButton(string $url, string $title = ''): string
+    protected function defaultAttributes(): array
     {
-        $icon = $this->icon ? "<i class='{$this->icon}'></i>&nbsp;&nbsp;" : '';
+        return [
+            'title' => $this->value ?? '',
+            'label' => $this->value ?? '',
+            'icon' => '',
+            'btn' => 'primary',
+            'width' => '80vw',
+            'height' => 'auto'
+        ];
+    }
+
+    protected function renderButton(
+        string $url,
+        string $title,
+        string $label,
+        string $icon,
+        string $btnType,
+        string $width,
+        string $height
+    ): string
+    {
+        $icon = $icon ? "<i class='{$icon}'></i>" : '';
+        $text = implode('&nbsp;&nbsp;', array_filter([$icon, $label]));
 
         return "<button
                     type='button'
-                    class='open-layer btn btn-{$this->buttonType}'
+                    class='open-layer btn btn-{$btnType}'
                     data-url='{$url}'
                     data-title='{$title}'
-                    data-width='{$this->layerWidth}'
-                    data-height='{$this->layerHeight}'
+                    data-width='{$width}'
+                    data-height='{$height}'
                 >
-                    {$icon}{$this->value}
+                    {$text}
                 </button>";
     }
 }

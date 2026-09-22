@@ -5,7 +5,10 @@ namespace Biin2013\DcatAdminTools;
 use Biin2013\DcatAdminTools\Console\Commands\ImportConfig;
 use Biin2013\DcatAdminTools\Console\Commands\ImportDb;
 use Biin2013\DcatAdminTools\Console\Commands\Menu;
+use Biin2013\DcatAdminTools\Foundation\Grid\Displayers\Label;
+use Biin2013\DcatAdminTools\Foundation\Grid\Displayers\Layer;
 use Dcat\Admin\Admin;
+use Dcat\Admin\Grid\Column;
 use Illuminate\Support\ServiceProvider;
 
 class DcatAdminToolsServiceProvider extends ServiceProvider
@@ -21,6 +24,9 @@ class DcatAdminToolsServiceProvider extends ServiceProvider
 
     public function boot(): void
     {
+        Column::extend('layer', Layer::class);
+        Column::extend('label', Label::class);
+
         $this->js();
     }
 
