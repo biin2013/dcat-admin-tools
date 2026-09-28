@@ -8,6 +8,7 @@ use Biin2013\DcatAdminTools\Console\Commands\Menu;
 use Biin2013\DcatAdminTools\Foundation\Grid\Displayers\Label;
 use Biin2013\DcatAdminTools\Foundation\Grid\Displayers\Layer;
 use Dcat\Admin\Admin;
+use Dcat\Admin\Form;
 use Dcat\Admin\Grid\Column;
 use Illuminate\Support\ServiceProvider;
 
@@ -26,6 +27,8 @@ class DcatAdminToolsServiceProvider extends ServiceProvider
     {
         Column::extend('layer', Layer::class);
         Column::extend('label', Label::class);
+
+        Form::extend('layer', Foundation\Form\Layer::class);
 
         $this->js();
     }
