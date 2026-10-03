@@ -71,7 +71,7 @@ class Layer extends Field
             <div class="{$viewClass['form-group']}">
                 <label class="{$viewClass['label']} control-label">{$this->label}</label>
                 <div class="{$viewClass['field']}">
-                    <div class="input-group" style="width: 150px">
+                    <div class="input-group">
                         {$this->renderButton()}
                     </div>
                 </div>
