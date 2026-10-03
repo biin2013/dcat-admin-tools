@@ -50,13 +50,13 @@ trait UseValidate
         return [];
     }
 
-    private function resolveAttributes(): array
+    private function resolveAttributes(array $rules): array
     {
-        return array_merge(
+        return array_intersect_key(array_merge(
             Lang::get('global')['fields'],
             Lang::get($this->translation())['fields'] ?? [],
             $this->attributes()
-        );
+        ), $rules);
     }
 
     /**
@@ -64,23 +64,28 @@ trait UseValidate
      * @param array|null $data
      * @param array|null $messages
      * @param array|null $attributes
+     * @param string $attributePrefix
      * @return void
-     * @throws ValidationException
      */
     protected function validateData(
         array  $rules,
         ?array $data = null,
         ?array $messages = null,
-        ?array $attributes = null
+        ?array $attributes = null,
+        string $attributePrefix = ''
     ): void
     {
         $data = $data ?? request()->all();
+        $attributes = $attributes ?? $this->resolveAttributes($rules);
+        if ($attributePrefix) {
+            array_walk($attributes, fn(&$item) => $item = $attributePrefix . ' ' . $item);
+        }
 
         $validator = Validator::make(
             $data,
             $rules,
             $messages ?? [],
-            $attributes ?? $this->resolveAttributes()
+            $attributes
         );
 
         if ($validator->fails()) {
