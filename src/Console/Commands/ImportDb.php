@@ -65,6 +65,7 @@ class ImportDb extends Command
                 'unique_fields' => [],
                 'unique_fields_separator_default' => '/',
                 'unique_fields_separator' => [],
+                'parent_id_field' => 'parent_id',
                 'custom' => fn() => [],
                 'success' => fn() => true,
             ],
@@ -91,7 +92,7 @@ class ImportDb extends Command
         $updateCount = 0;
 
         foreach ($data as $v) {
-            $v = $this->resolveUniqueFieldsValue($parent, $v, $config);
+            $v = $this->resolveFieldsValue($parent, $v, $config);
             $custom = $config['custom']($v, $parent);
             if ($custom === false) continue;
 
@@ -125,8 +126,10 @@ class ImportDb extends Command
         return compact('create', 'update', 'updateCount');
     }
 
-    private function resolveUniqueFieldsValue(array|Model|null $parent, array $data, array $config): array
+    private function resolveFieldsValue(array|Model|null $parent, array $data, array $config): array
     {
+        $data[$config['parent_id_field']] = $parent['id'] ?? 0;
+
         if (empty($config['unique_fields'])) return $data;
 
         if (empty($parent)) return $data;
