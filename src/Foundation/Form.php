@@ -64,33 +64,15 @@ class Form extends Base
 
     public function autoValidate(): void
     {
-        $this->beforeValidate($this);
+        $this->controller->beforeValidate($this);
 
-        $rules = $this->resolveRules();
+        $rules = $this->controller->validateMode($this->builder->mode())->resolveRules($this);
 
         if (empty($rules)) return;
 
         foreach ($rules as $field => $rule) {
             $this->findFieldByName($field)?->rules($rule, $this->controller->messages($this)[$field] ?? []);
         }
-    }
-
-    protected function beforeValidate(Form $form): void
-    {
-        $this->controller?->beforeValidate($form);
-    }
-
-    protected function resolveRules(): array
-    {
-        $rules = array_merge($this->controller->defaultRules(), $this->controller->rules($this));
-
-        if ($this->isCreating()) {
-            $rules = array_merge_recursive($rules, $this->controller->createExtraRules($this));
-        } elseif ($this->isEditing()) {
-            $rules = array_merge_recursive($rules, $this->controller->updateExtraRules($this));
-        }
-
-        return $rules;
     }
 
     public static function selectApi(

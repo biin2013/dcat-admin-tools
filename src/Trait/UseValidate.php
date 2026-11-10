@@ -13,22 +13,24 @@ use Illuminate\Validation\ValidationException;
 
 trait UseValidate
 {
-    public function beforeValidate(Form $form = null)
+    protected string $validateMode = \Dcat\Admin\Form\Builder::MODE_CREATE;
+
+    public function beforeValidate(Form|array $form = null): void
     {
 
     }
 
-    public function rules(Form $form): array
-    {
-        return [];
-    }
-
-    public function createExtraRules(Form $form): array
+    public function rules(Form|array $form = null): array
     {
         return [];
     }
 
-    public function updateExtraRules(Form $form): array
+    public function createExtraRules(Form|array $form = null): array
+    {
+        return [];
+    }
+
+    public function updateExtraRules(Form|array $form = null): array
     {
         return [];
     }
@@ -40,7 +42,7 @@ trait UseValidate
         ];
     }
 
-    public function messages(Form $form = null): array
+    public function messages(Form|array $form = null): array
     {
         return [];
     }
@@ -48,6 +50,13 @@ trait UseValidate
     protected function attributes(): array
     {
         return [];
+    }
+
+    public function validateMode(string $mode): static
+    {
+        $this->validateMode = $mode;
+
+        return $this;
     }
 
     private function resolveAttributes(array $rules): array
@@ -60,7 +69,7 @@ trait UseValidate
     }
 
     /**
-     * @param array $rules
+     * @param array|null $rules
      * @param array|null $data
      * @param array|null $messages
      * @param array|null $attributes
@@ -68,7 +77,7 @@ trait UseValidate
      * @return void
      */
     protected function validateData(
-        array  $rules,
+        ?array $rules = null,
         ?array $data = null,
         ?array $messages = null,
         ?array $attributes = null,
@@ -76,6 +85,9 @@ trait UseValidate
     ): void
     {
         $data = $data ?? request()->all();
+        $this->beforeValidate($data);
+        $rules = $rules ?? $this->resolveRules($data);
+        $messages = $messages ?? $this->messages($data);
         $attributes = $attributes ?? $this->resolveAttributes($rules);
         if ($attributePrefix) {
             array_walk($attributes, fn(&$item) => $item = $attributePrefix . ' ' . $item);
@@ -91,6 +103,19 @@ trait UseValidate
         if ($validator->fails()) {
             throw new ValidationException($validator);
         }
+    }
+
+    public function resolveRules(Form|array $form = null): array
+    {
+        $rules = array_merge($this->defaultRules(), $this->rules($form));
+
+        if ($this->validateMode == \Dcat\Admin\Form\Builder::MODE_CREATE) {
+            $rules = array_merge_recursive($rules, $this->createExtraRules($form));
+        } elseif ($this->validateMode == \Dcat\Admin\Form\Builder::MODE_EDIT) {
+            $rules = array_merge_recursive($rules, $this->updateExtraRules($form));
+        }
+
+        return $rules;
     }
 
     protected function validateUnique(Form $form, string $field, ?string $column = null): Unique
