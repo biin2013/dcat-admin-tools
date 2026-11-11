@@ -118,21 +118,25 @@ trait UseValidate
         return $rules;
     }
 
-    protected function validateUnique(Form $form, string $field, ?string $column = null): Unique
+    protected function validateUnique(Form|array $form, string $field, ?string $column = null): Unique
     {
+        $value = $form instanceof Form
+            ? $form->input($field)
+            : $form[$field];
         return Rule::unique($this->modelClass)
-            ->where(fn(Builder $query) => $query->where($column ?? $field, $form->input($field)));
+            ->where(fn(Builder $query) => $query->where($column ?? $field, $value));
     }
 
     protected function validateUniqueIgnore(
-        Form    $form,
-        string  $field,
-        ?string $column = null,
-        mixed   $ignore = null,
-        ?string $idColumn = null
+        Form|array $form,
+        string     $field,
+        ?string    $column = null,
+        mixed      $ignore = null,
+        ?string    $idColumn = null
     ): Unique
     {
+        $ignore = $ignore ?? ($form instanceof Form ? $form->getKey() : $form[$this->model()->getKeyName()]);
         return $this->validateUnique($form, $field, $column)
-            ->ignore($ignore ?? $form->getKey(), $idColumn);
+            ->ignore($ignore, $idColumn);
     }
 }
