@@ -23,7 +23,7 @@ class Controller extends AdminController
 
     public function createExtraRules(Form|array $form = null): array
     {
-        if (is_null($form)) return $this->createRules($form);
+        if (empty($this->uniqueField) || is_null($form)) return $this->createRules($form);
 
         return array_merge([
             $this->uniqueField => [$this->validateUnique($form, $this->uniqueColumn ?? $this->uniqueField)]
@@ -37,7 +37,7 @@ class Controller extends AdminController
 
     public function updateExtraRules(Form|array $form = null): array
     {
-        if (is_null($form)) return $this->updateRules($form);
+        if (empty($this->uniqueField) || is_null($form)) return $this->updateRules($form);
 
         return array_merge([
             $this->uniqueField => [$this->validateUniqueIgnore($form, $this->uniqueColumn ?? $this->uniqueField)]
