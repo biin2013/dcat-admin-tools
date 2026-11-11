@@ -21,18 +21,28 @@ class Controller extends AdminController
     protected string $uniqueField = 'name';
     protected string $uniqueColumn;
 
-    public function createExtraRules(Form $form): array
+    public function createExtraRules(Form|array $form = null): array
     {
-        return [
+        return array_merge([
             $this->uniqueField => [$this->validateUnique($form, $this->uniqueColumn ?? $this->uniqueField)]
-        ];
+        ], $this->createRules($form));
     }
 
-    public function updateExtraRules(Form $form): array
+    protected function createRules(Form|array $form = null): array
     {
-        return [
+        return [];
+    }
+
+    public function updateExtraRules(Form|array $form = null): array
+    {
+        return array_merge([
             $this->uniqueField => [$this->validateUniqueIgnore($form, $this->uniqueColumn ?? $this->uniqueField)]
-        ];
+        ], $this->updateRules($form));
+    }
+
+    protected function updateRules(Form|array $form = null): array
+    {
+        return [];
     }
 
     protected function title(): string
