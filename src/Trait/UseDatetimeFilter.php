@@ -17,7 +17,7 @@ trait UseDatetimeFilter
      * @param string $column The column name to filter on.
      * @param string $label The filter label (should be resolved via translation).
      */
-    protected function datetimeFilter(Filter $filter, string $column, string $label): void
+    protected function datetimeFilter(Filter $filter, string $column, string $label = ''): void
     {
         $filter->between($column, $label)->datetime(['useCurrent' => false]);
 
