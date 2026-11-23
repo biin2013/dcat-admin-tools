@@ -111,7 +111,7 @@ class SimpleController extends Controller
         $form->$type($column, $this->labels()[$column] ?? null);
     }
 
-    public function rules(Form $form): array
+    public function rules(Form|array $form = null): array
     {
         return $this->formRules;
     }
